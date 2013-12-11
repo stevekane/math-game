@@ -1,4 +1,5 @@
 var Game = function () {
+  
 };
 
 Game.prototype = Object.create({});
