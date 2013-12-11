@@ -22,6 +22,6 @@
   "license": "MIT",
   "dependencies": {
     "cloak": "~0.2.0",
-    "connect": "~2.12.0"
+    "ecstatic": "~0.4.13"
   }
 }

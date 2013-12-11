@@ -1,15 +1,14 @@
 var http = require('http')
-  , connect = require('connect')
+  , ecstatic = require('ecstatic')
   , cloak = require('cloak')
 
 var clientMessageHandlers = require('./eventHandlers/client.js')
   , roomEventHandlers = require('./eventHandlers/room.js')
   , game = new require('./Game.js');
 
-var app = connect()
-.use(connect.static(__dirname + "/public"));
-
-var server = http.createServer(app);
+var server = http.createServer(
+  ecstatic({root: __dirname + "/public"})
+);
 
 /**
 Configure our cloak game server.
@@ -20,7 +19,6 @@ be simple, thin delegations into our game system.
 The game mechanics should be insulated from the network
 layer as much as possible.
 */
-
 cloak.configure({
   port: 1337,
   autoCreateRooms: true,
@@ -28,6 +26,7 @@ cloak.configure({
   room: roomEventHandlers
 });
 
+//start our cloak socket server and http fileserver
 cloak.run();
 server.listen(1234, function () {
   console.log("http listening on 1234");
