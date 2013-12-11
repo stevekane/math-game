@@ -1,12 +1,20 @@
 module.exports = function (game) {
   return {
-    connecting: function () {},
-    begin: function () {},
+    connecting: function () {
+      console.log("you are trying to connect"); 
+    },
+    begin: function () {
+      console.log("you have connected!"); 
+    },
     resume: function () {},
-    disconnect: function () {},
+    disconnect: function () {
+      console.log("you have disconnected!"); 
+    },
     end: function () {},
     error: function (err) {},
-    joinedRoom: function (roomName) {},
+    joinedRoom: function (roomName) {
+      console.log("you joined room ", roomName); 
+    },
     leftRoom: function (roomName) {},
     roomMemberJoined: function (user) {},
     roomMemberLeft: function (user) {},
