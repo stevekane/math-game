@@ -4,7 +4,7 @@ var http = require('http')
 
 var clientMessageHandlers = require('./eventHandlers/client.js')
   , roomEventHandlers = require('./eventHandlers/room.js')
-  , game = new require('./Game.js');
+  , game = new require('./game/Game.js');
 
 var server = http.createServer(
   ecstatic({root: __dirname + "/public"})
