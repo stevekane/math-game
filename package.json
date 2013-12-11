@@ -1,0 +1,23 @@
+{
+  "name": "math-game",
+  "version": "0.0.1",
+  "description": "Multiplayer math flash card game",
+  "main": "math-server.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stevekane/math-game.git"
+  },
+  "keywords": [
+    "math",
+    "socket",
+    "websocket",
+    "multiplayer",
+    "game",
+    "flashcard"
+  ],
+  "author": "Steve Kane",
+  "license": "MIT"
+}
