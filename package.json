@@ -26,5 +26,8 @@
     "lodash": "~2.4.1",
     "socket.io-browserify": "~0.9.6",
     "cloak-browserify": "~0.1.0"
+  },
+  "devDependencies": {
+    "tape": "~2.3.0"
   }
 }

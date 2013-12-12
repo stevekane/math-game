@@ -1,5 +1,7 @@
 module.exports = function (game) {
   return {
-    test: function () {}
+    echo: function (data) {
+      console.log("server responded with ", data);
+    }
   };
 };

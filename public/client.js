@@ -14,4 +14,11 @@ cloak.configure({
   timerEvents: timerEvents
 });
 
+var sendTest = function () {
+  console.log("sending test");
+  cloak.message('test', "whoop that ass");
+};
+
+window.setInterval(sendTest, 1000);
+
 cloak.run(cloakPort);

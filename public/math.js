@@ -10766,12 +10766,21 @@ cloak.configure({
   timerEvents: timerEvents
 });
 
+var sendTest = function () {
+  console.log("sending test");
+  cloak.message('test', "whoop that ass");
+};
+
+window.setInterval(sendTest, 1000);
+
 cloak.run(cloakPort);
 
 },{"./events/custom":5,"./events/server":6,"./events/timer":7,"cloak-browserify":1}],5:[function(require,module,exports){
 module.exports = function (game) {
   return {
-    test: function () {}
+    echo: function (data) {
+      console.log("server responded with ", data);
+    }
   };
 };
 

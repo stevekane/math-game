@@ -2,9 +2,9 @@ var http = require('http')
   , ecstatic = require('ecstatic')
   , cloak = require('cloak')
 
-var clientMessageHandlers = require('./eventHandlers/client.js')
-  , roomEventHandlers = require('./eventHandlers/room.js')
-  , game = new require('./game/Game.js');
+var game = new require('./game/Game.js')(cloak)
+  , clientMessageHandlers = require('./eventHandlers/client.js')(game)
+  , roomEventHandlers = require('./eventHandlers/room.js')(game);
 
 var server = http.createServer(
   ecstatic({root: __dirname + "/public"})
