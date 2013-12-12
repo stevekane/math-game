@@ -1,4 +1,7 @@
-var _ = require('lodash');
+var _ = require('lodash')
+  , throwIf = require('./../utils/exceptions').throwIf
+  , throwUnless = require('./../utils/exceptions').throwUnless
+  , nonEmptyString = require('./../utils/exceptions').nonEmptyString;
 
 var Game = function (cloak) {
   this.cloak = cloak; 
@@ -9,7 +12,7 @@ var Game = function (cloak) {
 Game.prototype = Object.create({});
 
 Game.prototype.send = function (name, data) {
-   
+  throwIf("must provide name of function!", typeof name !== "string" || name === "");
 };
 
 Game.prototype.addState = function (state) {

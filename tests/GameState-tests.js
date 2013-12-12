@@ -17,14 +17,14 @@ test("GameState throws is no name is provided", function (t) {
   t.plan(4);  
   t.throws(function () {
     new GameState();
-  });
+  }, "throws if no name provided");
   t.throws(function () {
     new GameState("");
-  });
+  }, "throws if empty string provided for name");
   t.throws(function () {
     new GameState(null);
-  });
+  }, "throws if null provided for name");
   t.throws(function () {
     new GameState(undefined);
-  });
+  }, "throws if undefined provided for name");
 });
