@@ -10767,7 +10767,6 @@ cloak.configure({
 });
 
 var sendTest = function () {
-  console.log("sending test");
   cloak.message('test', "whoop that ass");
 };
 

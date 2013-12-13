@@ -3,8 +3,9 @@ var _ = require('lodash')
   , throwIf = require('./../utils/exceptions').throwIf
   , throwUnless = require('./../utils/exceptions').throwUnless;
 
-var Game = function (cloak) {
+var Game = function (cloak, clock) {
   this.cloak = cloak; 
+  this.clock = clock;
   this.states = [];
   this.activeState = null;
 };

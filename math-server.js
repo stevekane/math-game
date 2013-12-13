@@ -4,11 +4,12 @@ var http = require('http')
 
 //create our game object, and instances of our states
 var Game = require('./game/Game')
+  , Clock = require('./systems/Clock')
   , Waiting = require('./states/Waiting')
   , CollectingAnswers = require('./states/CollectingAnswers')
   , DisplayingAnswer = require('./states/DisplayingAnswer');
 
-var game = new Game(cloak);
+var game = new Game(cloak, new Clock);
 game
 .addState(new CollectingAnswers)
 .addState(new DisplayingAnswer)
@@ -37,6 +38,7 @@ layer as much as possible.
 cloak.configure({
   port: 1337,
   autoCreateRooms: true,
+  minRoomMembers: 1,
   messages: clientMessageHandlers,
   room: roomEventHandlers
 });

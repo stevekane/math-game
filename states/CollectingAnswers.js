@@ -6,6 +6,20 @@ var CollectingAnswers = function (name) {
   this.submissions = [];
   this.currentQuestion = null;
   this.currentAnswer = null;
+  this.duration = 7000;
+};
+
+//THIS IS A STUB FOR A FUTURE SYSTEM
+var generateProblem = function () {
+  var first = Math.floor(Math.random() * 100)
+    , second = Math.floor(Math.random() * 100)
+    , question = String(first) + " + " + String(second)
+    , answer = eval(question);
+
+  return {
+    question: question,
+    answer: answer
+  };
 };
 
 //used in array.map.  
@@ -14,6 +28,14 @@ var calculatePoints = function (sub, index, array) {
     user: sub.user,
     score: array.length - index
   };
+};
+
+var calculatePointTotals = function (answer, submissions) {
+  return _.chain(submissions)
+    .filter({answer: answer})
+    .uniq("user")
+    .map(calculatePoints)
+    .value();
 };
 
 CollectingAnswers.prototype = Object.create(GameState.prototype);
@@ -25,27 +47,36 @@ _.extend(CollectingAnswers.prototype, {
     return this;
   },
 
-  processSubmissions: function () {
-    var pointTotals = _.chain(this.submissions)
-      .filter({answer: this.currentAnswer})
-      .uniq("user")
-      .map(calculatePoints)
-      .value();
+  //called every 100ms by the game system
+  tick: function () {
+    var pointTotals;
 
-    //HERE FOR TESTING ATM
-    console.log(pointTotals.forEach(function (total) {
-      console.log("User", total.user, "won", total.score, "points!!"); 
-    }));
+    if (this.game.clock.getElapsed() > this.duration) {
+      pointTotals = calculatePointTotals(this.currentAnswer, this.submissions);
+      console.log("Point totals:", pointTotals);
+      //this.game.persistence.save(pointTotals);
+      this.game.cloak.messageAll("scores", pointTotals);
+      this.game.transitionTo("displaying-answer", this.currentAnswer);   
+    }
   },
 
+  /**
+  These are functions invoke by state changes. 
+  They are called by the Game object's transitionTo method
+  */
+  //called on entry, setupClock and generate a question
   enter: function () {
-    var self = this;
+    var self = this
+      , problem = generateProblem();
 
-    console.log("You are collecting answers!"); 
-    setTimeout(function () {
-      self.game.transitionTo("displaying-answer");   
-    }, 1000);
+    this.game.clock.startTime = Date.now();
+    this.game.clock.timeStamp = Date.now();
+    this.currentQuestion = problem.question;
+    this.currentAnswer = problem.answer;
+    this.game.cloak.messageAll("problem", this.currentQuestion);
+    console.log("Problem is: ", this.currentQuestion);
   },
+
   exit: function () {
     console.log("You are no longer collecting answers");  
   }

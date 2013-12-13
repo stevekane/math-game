@@ -34,6 +34,7 @@ test("enqueueSubmission should store the answer in submissions", function (t) {
   t.ok(ca.submissions.indexOf(submission2) === 1, "submission2 is second in the queue");
 });
 
+/*
 //JUST FOR TESTING.   DO NOT KEEP?
 test("processSubmissions", function (t) {
   var ca = new CollectingAnswers
@@ -61,3 +62,4 @@ test("processSubmissions", function (t) {
   ca.processSubmissions();
   t.end();
 });
+*/
