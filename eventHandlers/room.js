@@ -1,16 +1,20 @@
-module.exports = function (game) {
+/*
+"this" is the room.  most things should delegate to the
+game object associated with this room
+*/
+module.exports = function (cloak) {
   return {
     init: function (user) {
       console.log('room initialized'); 
     }, 
-    pulse: function (user) {
-      game.send('tick');       
+    pulse: function () {
+      this.game.send('tick');       
     },
     newMember: function (user) {
-      user.getRoom().messageMembers("newMember", "new guy!");
+      this.messageMembers("memberLeaves", "dude here");
     },
     memberLeaves: function (user) {
-      user.getRoom().messageMembers("memberLeaves", "dude left!");
+      this.messageMembers("memberLeaves", "dude gone");
     },
     close: function (user) {
     

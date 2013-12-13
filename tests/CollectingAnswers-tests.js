@@ -33,33 +33,3 @@ test("enqueueSubmission should store the answer in submissions", function (t) {
   t.ok(_.contains(ca.submissions, submission2), "submission2 is enqueued");
   t.ok(ca.submissions.indexOf(submission2) === 1, "submission2 is second in the queue");
 });
-
-/*
-//JUST FOR TESTING.   DO NOT KEEP?
-test("processSubmissions", function (t) {
-  var ca = new CollectingAnswers
-    , submission1 = {user: 1, answer:5}
-    , submission2 = {user: 2, answer:6}
-    , submission3 = {user: 3, answer:5}
-    , submission4 = {user: 4, answer:6}
-    , submission5 = {user: 2, answer:5}
-    , submission6 = {user: 4, answer:7}
-    , submission7 = {user: 1, answer:6}
-    , submission8 = {user: 4, answer:5};
-
-  ca.currentAnswer = 5;
-  ca.enqueueSubmission(submission1)
-  .enqueueSubmission(submission2)
-  .enqueueSubmission(submission3)
-  .enqueueSubmission(submission4)
-  .enqueueSubmission(submission5)
-  .enqueueSubmission(submission6)
-  .enqueueSubmission(submission5)
-  .enqueueSubmission(submission6)
-  .enqueueSubmission(submission7)
-  .enqueueSubmission(submission8)
-
-  ca.processSubmissions();
-  t.end();
-});
-*/

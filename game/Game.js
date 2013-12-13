@@ -3,8 +3,8 @@ var _ = require('lodash')
   , throwIf = require('./../utils/exceptions').throwIf
   , throwUnless = require('./../utils/exceptions').throwUnless;
 
-var Game = function (cloak, clock) {
-  this.cloak = cloak; 
+var Game = function (room, clock) {
+  this.room = room; 
   this.clock = clock;
   this.states = [];
   this.activeState = null;

@@ -8,17 +8,16 @@ var Waiting = function (name) {
 Waiting.prototype = Object.create(GameState.prototype);
 
 _.extend(Waiting.prototype, {
-  enter: function () {
-    var self = this;
 
-    console.log("Waiting!"); 
-    setTimeout(function () {
-      self.game.transitionTo("collecting-answers");   
-    }, 1000);
+  tick: function () {
+    if (this.game.room.getMembers().length > 0) {
+      this.game.transitionTo('collecting-answers'); 
+    }
   },
-  exit: function () {
-    console.log("Waiting complete!");  
-  }
+
+  /**
+  These are functions invoked by state change. 
+  */
 });
 
 module.exports = Waiting;

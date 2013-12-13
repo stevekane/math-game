@@ -2,6 +2,10 @@
 var cloak = require('cloak-browserify')
   , game = new Object();
 
+//explicitly inject cloak onto the game object allowing us to
+//delegate to the network layer
+game.cloak = cloak;
+
 var serverEvents = require('./events/server')(game)
   , customEvents = require('./events/custom')(game)
   , timerEvents = require('./events/timer')(game);
@@ -13,11 +17,5 @@ cloak.configure({
   serverEvents: serverEvents,
   timerEvents: timerEvents
 });
-
-var sendTest = function () {
-  cloak.message('test', "whoop that ass");
-};
-
-window.setInterval(sendTest, 1000);
 
 cloak.run(cloakPort);

@@ -3,14 +3,14 @@ var _ = require('lodash')
   , Game = require('./../game/Game');
 
 test("Game is a constructor", function (t) {
-  var cloak = {}
+  var room = {}
     , clock = {}
-    , game = new Game(cloak, clock)
+    , game = new Game(room, clock)
 
   t.plan(4);
   t.ok(typeof Game === "function", "Game is a constructor");
   t.ok(typeof game === "object", "state is an instance");
-  t.same(game.cloak, cloak, "cloak attribute assigned to instance");
+  t.same(game.room, room, "room attribute assigned to instance");
   t.same(game.clock, clock, "clock attribute assigned to instance");
 });
 

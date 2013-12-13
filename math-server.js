@@ -9,22 +9,9 @@ var Game = require('./game/Game')
   , CollectingAnswers = require('./states/CollectingAnswers')
   , DisplayingAnswer = require('./states/DisplayingAnswer');
 
-var game = new Game(cloak, new Clock);
-game
-.addState(new CollectingAnswers)
-.addState(new DisplayingAnswer)
-.addState(new Waiting)
-.transitionTo("waiting");
-
-//define our socket message handlers and pass them a refernce to game
-//these handlers will exclusively delegate into the game object
-var clientMessageHandlers = require('./eventHandlers/client.js')(game)
-  , roomEventHandlers = require('./eventHandlers/room.js')(game);
-
-//static file server for our client application
-var server = http.createServer(
-  ecstatic({root: __dirname + "/public"})
-);
+//custom and room socket event handlers, pass a reference to cloak
+var clientMessageHandlers = require('./eventHandlers/client.js')(cloak)
+  , roomEventHandlers = require('./eventHandlers/room.js')(cloak);
 
 /**
 Configure our cloak game server.
@@ -37,14 +24,34 @@ layer as much as possible.
 */
 cloak.configure({
   port: 1337,
-  autoCreateRooms: true,
-  minRoomMembers: 1,
+  minRoomMembers: 0,
+  defaultRoomSize: null,
   messages: clientMessageHandlers,
   room: roomEventHandlers
 });
-
-//start our cloak socket server and http fileserver
 cloak.run();
+
+//Create rooms!  A DSL or smarter constructor might be nice?
+var room = cloak.createRoom("addition");
+var game = new Game(room, new Clock);
+/*
+here we are explicitly attaching a reference to the game object
+on the room.  this is useful because it allows the room events to
+delegate into the game objects (and their associated states)
+*/
+room.game = game;
+
+game
+.addState(new CollectingAnswers)
+.addState(new DisplayingAnswer)
+.addState(new Waiting)
+.transitionTo("waiting");
+
+//static file server for our client application
+var server = http.createServer(
+  ecstatic({root: __dirname + "/public"})
+);
+
 server.listen(1234, function () {
   console.log("http listening on 1234");
 });

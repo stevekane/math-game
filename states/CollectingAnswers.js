@@ -55,16 +55,14 @@ _.extend(CollectingAnswers.prototype, {
       pointTotals = calculatePointTotals(this.currentAnswer, this.submissions);
       console.log("Point totals:", pointTotals);
       //this.game.persistence.save(pointTotals);
-      this.game.cloak.messageAll("scores", pointTotals);
+      this.game.room.messageMembers("scores", pointTotals);
       this.game.transitionTo("displaying-answer", this.currentAnswer);   
     }
   },
 
   /**
   These are functions invoke by state changes. 
-  They are called by the Game object's transitionTo method
   */
-  //called on entry, setupClock and generate a question
   enter: function () {
     var self = this
       , problem = generateProblem();
@@ -73,7 +71,7 @@ _.extend(CollectingAnswers.prototype, {
     this.game.clock.timeStamp = Date.now();
     this.currentQuestion = problem.question;
     this.currentAnswer = problem.answer;
-    this.game.cloak.messageAll("problem", this.currentQuestion);
+    this.game.room.messageMembers("problem", this.currentQuestion);
     console.log("Problem is: ", this.currentQuestion);
   },
 

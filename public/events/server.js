@@ -5,8 +5,12 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
+      game.cloak.message('join', 'addition');
     },
-    resume: function () {},
+    resume: function () {
+      console.log("you have connected!"); 
+      game.cloak.message('join', 'addition');
+    },
     disconnect: function () {
       console.log("you have disconnected!"); 
     },
