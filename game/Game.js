@@ -14,17 +14,29 @@ Game.prototype = Object.create({});
 
 /**
 Send is used to send events by name to the currently activeState
-If the current state has no method by the provided name, this is the 
-end of the road.  If it does, the method will be called with the
-provided arguments as arguments.
+
+If the activeState has a method by the provided name, it is called
+with the provided arguments
+
+If the activeState does NOT have a method by the provided name, we then
+check for this method on ourselves (the game object).  If it exists, we 
+call it.
+
+If the game object also does not have a function by the provided name,
+we throw an error and cry a lot and whine and make a big fuss.
 */
 Game.prototype.send = function (name) {
   var args = slice(arguments, 1);
 
   throwIf("must provide name of function!", typeof name !== "string" || name === "");
   throwIf("no active state!", this.activeState === null);
+
   if (typeof this.activeState[name] === "function") {
     this.activeState[name].apply(this.activeState, args);
+  } else if (typeof this[name] === "function") {
+    this[name].apply(this, args); 
+  } else {
+    throw new Error("Nothing handled the event " + name);
   }
   return this;
 };
@@ -40,14 +52,15 @@ Game.prototype.addState = function (state) {
 
 Game.prototype.removeStateByName = function (name) {
   var targetState = _.find(this.states, {name: name});
+
   _.remove(this.states, targetState);
-  targetState.game=null;
+  targetState.game = null;
   return this;
 };
 
 Game.prototype.removeState = function (state) {
   _.remove(this.states, state);
-  state.game=null;
+  state.game = null;
   return this;
 };
 

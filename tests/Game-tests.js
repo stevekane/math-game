@@ -17,6 +17,7 @@ test("Game is a constructor", function (t) {
 //#send
 test("Game.send should throw if name is not a non-empty string", function (t) {
   var game = new Game();
+  game.func = function () {};
   game
     .addState({name: "test"})
     .transitionTo("test");
@@ -38,6 +39,50 @@ test("Game.send should throw if name is not a non-empty string", function (t) {
   t.doesNotThrow(function () {
     game.send("func"); 
   }, "does not throw if nonempty string provided for name");
+});
+
+test(
+"Game.send should fire an a specified function on the Game instance if " +
+"no function by that name is found on the activeState", 
+function (t) {
+  t.plan(2);
+  var game = new Game()
+    , arg1 = "testArg"
+    , arg2 = "anotherArg"
+    , state = {
+      name: "test"
+    };
+
+  game.func = function (first, second) {
+    t.same(first, "testArg", "first argument called in game method func");
+    t.same(second, "anotherArg", "second argument called in game method func");
+  };
+  game
+    .addState({name: "test"})
+    .transitionTo("test")
+    .send("func", arg1, arg2);
+});
+
+test("Game.send should throw if neither the activeState or game instance has the named method", 
+function (t) {
+  t.plan(2);
+  var game = new Game()
+    , arg1 = "testArg"
+    , arg2 = "anotherArg"
+    , state = {
+      name: "test"
+    };
+
+  game
+    .addState({name: "test"})
+    .transitionTo("test");
+
+  t.throws(function () {
+    game.send("notthere"); 
+  });
+  t.throws(function () {
+    game.send("alsonotthere"); 
+  });
 });
 
 test("Game.send should fire a specificed function name with arguments", function (t) {
