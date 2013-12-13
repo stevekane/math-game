@@ -50,7 +50,10 @@ TBD
 ###Game
 The game object is very stupid.  It simply repeats a cycle infinitely.
 
-It has two states, ACCEPTING ANSWERS, DISPLAYING ANSWER
+It has three states: 
+1. collecting-answers
+2. displaying-answer
+3. waiting
 
 Generate question and answer.  Hash the answer.
 Send the question and hashed answer to all connected players.

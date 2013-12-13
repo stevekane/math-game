@@ -4,7 +4,7 @@ var http = require('http')
 
 //create our game object, and instances of our states
 var Game = require('./game/Game')
-  , Initializing = require('./states/Initializing')
+  , Waiting = require('./states/Waiting')
   , CollectingAnswers = require('./states/CollectingAnswers')
   , DisplayingAnswer = require('./states/DisplayingAnswer');
 
@@ -12,8 +12,8 @@ var game = new Game(cloak);
 game
 .addState(new CollectingAnswers)
 .addState(new DisplayingAnswer)
-.addState(new Initializing)
-.transitionTo("initializing");
+.addState(new Waiting)
+.transitionTo("waiting");
 
 //define our socket message handlers and pass them a refernce to game
 //these handlers will exclusively delegate into the game object
