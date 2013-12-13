@@ -8,14 +8,16 @@ module.exports = function (game) {
       game.cloak.message('join', 'addition');
     },
     resume: function () {
-      console.log("you have connected!"); 
+      console.log("you have re-connected!"); 
       game.cloak.message('join', 'addition');
     },
     disconnect: function () {
       console.log("you have disconnected!"); 
     },
     end: function () {},
-    error: function (err) {},
+    error: function (err) {
+      console.log("there was an error when connecting"); 
+    },
     joinedRoom: function (roomName) {
       console.log("you joined room ", roomName); 
     },
