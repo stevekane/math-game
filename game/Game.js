@@ -33,16 +33,20 @@ Game.prototype.addState = function (state) {
 
   throwIf("Already a state with name " + state.name, stateByThisName);
   this.states.push(state); 
+  state.game=this;
   return this;
 };
 
 Game.prototype.removeStateByName = function (name) {
-  _.remove(this.states, {name: name});
+  var targetState = _.find(this.states, {name: name});
+  _.remove(this.states, targetState);
+  targetState.game=null;
   return this;
 };
 
 Game.prototype.removeState = function (state) {
   _.remove(this.states, state);
+  state.game=null;
   return this;
 };
 

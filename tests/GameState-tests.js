@@ -3,14 +3,12 @@ var test = require('tape')
 
 test("GameState is a constructor", function (t) {
   var name = "test-state"
-    , game = {}
-    , state = new GameState(name, game); 
+    , state = new GameState(name); 
 
-  t.plan(4);
+  t.plan(3);
   t.ok(typeof GameState === "function", "GameState is a constructor");
   t.ok(typeof state === "object", "state is an instance");
   t.same(state.name, name, "name attribute assigned to instance");
-  t.same(state.game, game, "game attribute assigned to instance");
 });
 
 test("GameState throws is no name is provided", function (t) {
