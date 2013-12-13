@@ -1,4 +1,5 @@
-var throwIf = require('./../utils/exceptions').throwIf
+var _ = require('lodash')
+  , throwIf = require('./../utils/exceptions').throwIf
   , isFalse = require('./../utils/conditionals').isFalse;
 
 var GameState = function (name) {

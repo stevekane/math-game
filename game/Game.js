@@ -33,7 +33,7 @@ Game.prototype.addState = function (state) {
 
   throwIf("Already a state with name " + state.name, stateByThisName);
   this.states.push(state); 
-  state.game=this;
+  state.game = this;
   return this;
 };
 
@@ -56,11 +56,11 @@ Game.prototype.transitionTo = function (name) {
     , oldState = this.activeState;
 
   throwUnless("No state with name " + name, targetState);
-  if (targetState.enter) {
-    targetState.enter.apply(targetState, args);
-  }
   if (oldState && oldState.exit) {
     oldState.exit.apply(oldState); 
+  }
+  if (targetState.enter) {
+    targetState.enter.apply(targetState, args);
   }
 
   this.activeState = targetState;
