@@ -1,2 +1,0 @@
-//Subclasses
-require('./CollectingAnswers-tests')

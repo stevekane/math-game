@@ -1,6 +1,6 @@
 var  _ = require('lodash')
   , test = require('tape')
-  , CollectingAnswers = require('./../game/states/CollectingAnswers');
+  , CollectingAnswers = require('./../../game/states/CollectingAnswers');
 
 //CollectingAnswers
 test("CollectingAnswers is a constructor that sets a several attributes",

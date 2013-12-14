@@ -6,8 +6,8 @@ var http = require('http')
 var MathGame = require('./game/MathGame');
 
 //custom and room socket event handlers, pass a reference to cloak
-var clientMessageHandlers = require('./eventHandlers/client.js')(cloak)
-  , roomEventHandlers = require('./eventHandlers/room.js')(cloak);
+var clientMessageHandlers = require('./cloak/client-handlers.js')(cloak)
+  , roomEventHandlers = require('./cloak/room-handlers.js')(cloak);
 
 /**
 Configure our cloak game server.
