@@ -1,5 +1,5 @@
 var _ = require('lodash')
-  , GameState = require('./../game/GameState');
+  , GameState = require('./../../modules/game/GameState');
 
 var Waiting = function (name) {
   this.name = name || "waiting";

@@ -1,7 +1,8 @@
 var _ = require('lodash')
-  , slice = require('./../utils/array').slice
-  , throwIf = require('./../utils/exceptions').throwIf
-  , throwUnless = require('./../utils/exceptions').throwUnless;
+  , throwIf = require('power-throw').throwIf
+  , throwUnless = require('power-throw').throwUnless;
+
+var slice = Function.prototype.call.bind(Array.prototype.slice);
 
 var Game = function (room, clock) {
   this.room = room; 

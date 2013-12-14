@@ -1,6 +1,6 @@
 var _ = require('lodash')
   , test = require('tape')
-  , Game = require('./../game/Game');
+  , Game = require('./Game');
 
 test("Game is a constructor", function (t) {
   var room = {}

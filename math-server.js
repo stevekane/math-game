@@ -3,11 +3,7 @@ var http = require('http')
   , cloak = require('cloak');
 
 //create our game object, and instances of our states
-var Game = require('./game/Game')
-  , Clock = require('./systems/Clock')
-  , Waiting = require('./states/Waiting')
-  , CollectingAnswers = require('./states/CollectingAnswers')
-  , DisplayingAnswer = require('./states/DisplayingAnswer');
+var MathGame = require('./game/MathGame');
 
 //custom and room socket event handlers, pass a reference to cloak
 var clientMessageHandlers = require('./eventHandlers/client.js')(cloak)
@@ -33,19 +29,14 @@ cloak.run();
 
 //Create rooms!  A DSL or smarter constructor might be nice?
 var room = cloak.createRoom("addition");
-var game = new Game(room, new Clock);
+
 /*
 here we are explicitly attaching a reference to the game object
 on the room.  this is useful because it allows the room events to
 delegate into the game objects (and their associated states)
 */
+var game = new MathGame({room: room});
 room.game = game;
-
-game
-.addState(new CollectingAnswers)
-.addState(new DisplayingAnswer)
-.addState(new Waiting)
-.transitionTo("waiting");
 
 //static file server for our client application
 var server = http.createServer(

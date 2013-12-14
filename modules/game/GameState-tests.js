@@ -1,5 +1,5 @@
 var test = require('tape')
-  , GameState = require('./../game/GameState');
+  , GameState = require('./GameState');
 
 test("GameState is a constructor", function (t) {
   var name = "test-state"
