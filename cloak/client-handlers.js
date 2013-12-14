@@ -2,6 +2,7 @@ var _ = require('lodash');
 
 module.exports = function (cloak) {
   return {
+
     //join a specific room.
     join: function (roomName, user) {
       var targetRoom = _.find(cloak.getRooms(), {name: roomName});
@@ -9,6 +10,7 @@ module.exports = function (cloak) {
         user.joinRoom(targetRoom);
       }
     },
+
     //leave rooms.  will return you to lobby
     leave: function (data, user) {
       user.getRoom().removeMember(user);

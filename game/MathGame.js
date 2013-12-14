@@ -12,18 +12,33 @@ var defaultStates = [
 ];
 
 var MathGame = function (options) {
+  var states = options.states || defaultStates
+    , self = this;
+
   this.room = options.room || null; 
   this.clock = options.clock || new Clock;
-  this.states = options.states || defaultStates;
-  this.activeState = options.activeState || "waiting";
+  this.states = [];
+
+  _.forEach(states, function (state) {
+    self.addState(state);
+  });
+  this.transitionTo('waiting');
 }
 
 MathGame.prototype = Object.create(Game.prototype);
 
 _.extend(MathGame.prototype, {
+
   tick: function () {
     console.log('tick handled by MathGame'); 
   },
+
+  roomIsEmpty: function () {
+    this.transitionTo('waiting'); 
+  },
+
+  //no-op
+  roomNotEmpty: function () {},
 });
 
 module.exports = MathGame;
