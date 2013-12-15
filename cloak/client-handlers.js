@@ -15,5 +15,13 @@ module.exports = function (cloak) {
     leave: function (data, user) {
       user.getRoom().removeMember(user);
     },
+
+    answer: function (answer, user) {
+      var submission = {
+        answer: answer,
+        user: user.id
+      };
+      user.getRoom().game.send("enqueueSubmission", submission);
+    }
   };
 };

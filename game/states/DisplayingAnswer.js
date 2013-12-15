@@ -3,19 +3,30 @@ var _ = require('lodash')
 
 var DisplayingAnswer = function (name) {
   this.name = name || "displaying-answer";
+  this.currentAnswer = null;
+  this.duration = 2000;
 };
 
 DisplayingAnswer.prototype = Object.create(GameState.prototype);
 
 _.extend(DisplayingAnswer.prototype, {
-  enter: function () {
-    var self = this;
-
-    console.log("You are displaying the answer!"); 
-    setTimeout(function () {
-      self.game.transitionTo("collecting-answers");   
-    }, 1000);
+  
+  //called every 100ms by the game system
+  tick: function () {
+    if (this.game.clock.getElapsed() > this.duration) {
+      this.game.transitionTo("collecting-answers");   
+    }
   },
+
+  enter: function (answer) {
+    var self = this
+      , now = Date.now();
+
+    this.game.clock.startTime = now;
+    this.game.clock.timeStamp = now;
+    this.game.room.messageMembers("answer", answer);
+  },
+
   exit: function () {
     console.log("You are no longer displaying the answer");  
   }

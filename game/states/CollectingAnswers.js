@@ -31,7 +31,14 @@ var calculatePoints = function (sub, index, array) {
 };
 
 var calculatePointTotals = function (answer, submissions) {
+  console.log(answer, submissions);
   return _.chain(submissions)
+    .map(function (sub) {
+      return {
+        answer: Number(sub.answer),
+        user: sub.user
+      }; 
+    })
     .filter({answer: answer})
     .uniq("user")
     .map(calculatePoints)
@@ -65,13 +72,15 @@ _.extend(CollectingAnswers.prototype, {
   */
   enter: function () {
     var self = this
+      , now = Date.now()
       , problem = generateProblem();
 
-    this.game.clock.startTime = Date.now();
-    this.game.clock.timeStamp = Date.now();
+    this.submissions = [];
+    this.game.clock.startTime = now;
+    this.game.clock.timeStamp = now;
     this.currentQuestion = problem.question;
     this.currentAnswer = problem.answer;
-    this.game.room.messageMembers("problem", this.currentQuestion);
+    this.game.room.messageMembers("question", this.currentQuestion);
     console.log("Problem is: ", this.currentQuestion);
   },
 
