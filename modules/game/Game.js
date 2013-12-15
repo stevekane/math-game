@@ -65,20 +65,28 @@ Game.prototype.removeState = function (state) {
   return this;
 };
 
+/**
+called to initial an activeState change:
+throw if provided name matches no available state's name
+if the targetted state IS the current activeState, do nothing
+if there is a current activeState, call its exit method
+if the targetted state has an enter method, call it
+*/
 Game.prototype.transitionTo = function (name) {
   var args = slice(arguments, 1)
     , targetState = _.find(this.states, {name: name})
     , oldState = this.activeState;
 
   throwUnless("No state with name " + name, targetState);
-  if (oldState && oldState.exit) {
-    oldState.exit.apply(oldState); 
+  if (oldState !== targetState) {
+    if (oldState && oldState.exit) {
+      oldState.exit.apply(oldState); 
+    }
+    if (targetState.enter) {
+      targetState.enter.apply(targetState, args);
+    }
+    this.activeState = targetState;
   }
-  if (targetState.enter) {
-    targetState.enter.apply(targetState, args);
-  }
-
-  this.activeState = targetState;
   return this;
 };
 

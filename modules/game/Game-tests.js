@@ -5,7 +5,7 @@ var _ = require('lodash')
 test("Game is a constructor", function (t) {
   var room = {}
     , clock = {}
-    , game = new Game(room, clock)
+    , game = new Game(room, clock);
 
   t.plan(4);
   t.ok(typeof Game === "function", "Game is a constructor");
@@ -216,25 +216,54 @@ function (t) {
   t.plan(4);
   var game = new Game()
     , arg1 = "firstArg"
-    , arg2 = "secondArg"
-    , state1 = {
-      name: "state1",
-      enter: function (first, second) {
-        t.ok(true, "the enter function was called");
-        t.same(first, arg1, "argument 1 correctly passed to enter function");
-        t.same(second, arg2, "argument 2 correctly passed to enter function");
-      }
+    , arg2 = "secondArg";
+  var state1 = {
+    name: "state1",
+    enter: function (first, second) {
+      t.ok(true, "the enter function was called");
+      t.same(first, arg1, "argument 1 correctly passed to enter function");
+      t.same(second, arg2, "argument 2 correctly passed to enter function");
     }
-    , state2 = {
-      name: "state2",
-      exit: function () {
-        t.ok(true, "the exit function was called");
-      }
-    };
+  }
+  var state2 = {
+    name: "state2",
+    exit: function () {
+      t.ok(true, "the exit function was called");
+    }
+  };
 
   game
     .addState(state1)
     .addState(state2)
     .transitionTo("state2")
     .transitionTo("state1", arg1, arg2);
+});
+
+test(
+"Game.transitionTo should NOT call the current activeState's exit method OR the" +
+"targetted state's enter method if the target state is the current activeState.  it's a no-op",
+function (t) {
+  t.plan(2);
+  var game = new Game()
+    , arg1 = "firstArg"
+    , arg2 = "secondArg"
+    , timesEnterWasCalled = 0
+    , timesExitWasCalled = 0;
+  var state1 = {
+    name: "state1",
+    enter: function (first, second) {
+      ++timesEnterWasCalled; 
+    },
+    exit: function () {
+      ++timesExitWasCalled;
+    }
+  }
+
+  game
+    .addState(state1)
+    .transitionTo("state1")
+    .transitionTo("state1", arg1, arg2);
+
+  t.ok(timesEnterWasCalled === 1, "enter called only once since targetState same as activeState");
+  t.ok(timesExitWasCalled === 0, "state1.exit never called since targetState same as activeState");
 });
