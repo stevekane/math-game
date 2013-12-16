@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var AnswerInput = React.createClass({
   getInitialState: function () {
     return {
@@ -76,6 +78,14 @@ var Room = React.createClass({
   }
 });
 
+var createRoomTile = _.curry(function (context, clickHandler, room) {
+  return (
+    <li onClick={clickHandler.bind(context, room)} className="list-group-item">
+      {room.name}{room.users.length}
+    </li>
+  );
+});
+
 var Lobby = React.createClass({
   
   selectRoom: function (room) {
@@ -91,13 +101,7 @@ var Lobby = React.createClass({
         <div className="col-md-4">
           <h1>Dat Lobby</h1>
           <ul className="col-md-4 list-group">
-            {rooms.map(function (room, i) {
-              return (
-                <li onClick={self.selectRoom.bind(self, room)} className="list-group-item">
-                  {room.name}{room.users.length}
-                </li>
-              );
-            })}
+            {rooms.map(createRoomTile(self, self.selectRoom))}
           </ul> 
         </div>
       </div>  

@@ -10933,7 +10933,9 @@ cloak.port = "http://localhost:1337",
 cloak.run(cloak.port);
 
 },{"./components.jsx":9,"./events/custom":10,"./events/server":11,"./events/timer":12,"./game/MathClient":13,"cloak-browserify":3}],9:[function(require,module,exports){
-/** @jsx React.DOM */var AnswerInput = React.createClass({displayName: 'AnswerInput',
+/** @jsx React.DOM */var _ = require('lodash');
+
+var AnswerInput = React.createClass({displayName: 'AnswerInput',
   getInitialState: function () {
     return {
       value: "",
@@ -11011,6 +11013,14 @@ var Room = React.createClass({displayName: 'Room',
   }
 });
 
+var createRoomTile = _.curry(function (context, clickHandler, room) {
+  return (
+    React.DOM.li( {onClick:clickHandler.bind(context, room), className:"list-group-item"}, 
+      room.name,room.users.length
+    )
+  );
+});
+
 var Lobby = React.createClass({displayName: 'Lobby',
   
   selectRoom: function (room) {
@@ -11026,13 +11036,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
         React.DOM.div( {className:"col-md-4"}, 
           React.DOM.h1(null, "Dat Lobby"),
           React.DOM.ul( {className:"col-md-4 list-group"}, 
-            rooms.map(function (room, i) {
-              return (
-                React.DOM.li( {onClick:self.selectRoom.bind(self, room), className:"list-group-item"}, 
-                  room.name,room.users.length
-                )
-              );
-            })
+            rooms.map(createRoomTile(self, self.selectRoom))
           ) 
         )
       )  
@@ -11075,7 +11079,7 @@ var GameComponent = React.createClass({displayName: 'GameComponent',
 
 module.exports.GameComponent = GameComponent;
 
-},{}],10:[function(require,module,exports){
+},{"lodash":5}],10:[function(require,module,exports){
 /** @jsx React.DOM */module.exports = function (game) {
   return {
     rooms: function (rooms) {
