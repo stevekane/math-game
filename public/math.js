@@ -96,7 +96,7 @@ Game.prototype.transitionTo = function (name) {
 
 module.exports = Game;
 
-},{"events":18,"lodash":5,"power-throw":6}],2:[function(require,module,exports){
+},{"events":19,"lodash":5,"power-throw":6}],2:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash')
   , throwUnless = require('power-throw').throwUnless;
 
@@ -10894,7 +10894,10 @@ module.exports = Clock;
 },{}],8:[function(require,module,exports){
 /** @jsx React.DOM */var Game = require('./game/MathClient')
   , cloak = require('cloak-browserify')
-  , components = require('./components.jsx');
+  , NavBar = require('./navbar.jsx')
+  , components = require('./components.jsx')
+  , navDiv = document.getElementById('nav')
+  , contentDiv = document.getElementById('content');
 
 var game = new Game;
 
@@ -10904,7 +10907,11 @@ game.cloak = cloak;
 var gui = React.renderComponent(components.GameComponent({
   game: game,
   rooms: []
-}), document.body);
+}), contentDiv);
+
+var nav = React.renderComponent(NavBar({
+  
+}), navDiv);
 
 game.on('transition', function (name) {
   gui.setState({
@@ -10932,7 +10939,7 @@ cloak.configure({
 cloak.port = "http://localhost:1337",
 cloak.run(cloak.port);
 
-},{"./components.jsx":9,"./events/custom":10,"./events/server":11,"./events/timer":12,"./game/MathClient":13,"cloak-browserify":3}],9:[function(require,module,exports){
+},{"./components.jsx":9,"./events/custom":10,"./events/server":11,"./events/timer":12,"./game/MathClient":13,"./navbar.jsx":17,"cloak-browserify":3}],9:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash');
 
 var AnswerInput = React.createClass({displayName: 'AnswerInput',
@@ -10998,15 +11005,15 @@ var PlayerList = React.createClass({displayName: 'PlayerList',
 var Room = React.createClass({displayName: 'Room',
   render: function () {
     return (
-      React.DOM.div( {className:"row"}, 
-        React.DOM.aside( {className:"col-md-2"}, 
-          PlayerList( {players:this.props.players} )
+      React.DOM.div( {className:"col-md-9"}, 
+        React.DOM.section( {className:"col-md-9"}, 
+          React.DOM.h1(null, "Question: ", this.props.question),
+          React.DOM.h2(null, "Answer: ", this.props.answer),
+          AnswerInput( {cloak:this.props.cloak} )
         ),
 
-        React.DOM.section( {className:"col-md-4"}, 
-          React.DOM.h1(null, this.props.question),
-          React.DOM.h2(null, this.props.answer),
-          AnswerInput( {cloak:this.props.cloak} )
+        React.DOM.aside( {className:"col-md-3"}, 
+          PlayerList( {players:this.props.players} )
         )
       )
     ); 
@@ -11016,7 +11023,8 @@ var Room = React.createClass({displayName: 'Room',
 var createRoomTile = _.curry(function (context, clickHandler, room) {
   return (
     React.DOM.li( {onClick:clickHandler.bind(context, room), className:"list-group-item"}, 
-      room.name,room.users.length
+      React.DOM.span( {className:"badge"}, room.users.length),
+      room.name
     )
   );
 });
@@ -11032,14 +11040,11 @@ var Lobby = React.createClass({displayName: 'Lobby',
       , self = this;
       
     return (
-      React.DOM.div( {className:"row"}, 
-        React.DOM.div( {className:"col-md-4"}, 
-          React.DOM.h1(null, "Dat Lobby"),
-          React.DOM.ul( {className:"col-md-4 list-group"}, 
-            rooms.map(createRoomTile(self, self.selectRoom))
-          ) 
-        )
-      )  
+      React.DOM.div( {className:"col-md-3"}, 
+        React.DOM.ul( {className:"list-group"}, 
+          rooms.map(createRoomTile(self, self.selectRoom))
+        ) 
+      )
     ); 
   }
 });
@@ -11053,10 +11058,15 @@ var Loading = React.createClass({displayName: 'Loading',
 var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return Lobby( {rooms:props.rooms, game:props.game})
+      return Lobby( {rooms:props.rooms, game:props.game} )
       break;
     case "in-room":
-      return Room( {players:[], question:"", answer:""} )
+      return (
+        React.DOM.div(null, 
+          Lobby( {rooms:props.rooms, game:props.game} ),
+          Room( {players:[], question:"", answer:""} )
+        )
+      );
       break;
     default:
       return Loading(null ) 
@@ -11073,7 +11083,14 @@ var GameComponent = React.createClass({displayName: 'GameComponent',
   }, 
 
   render: function () {
-    return renderState(this.state.activeState, this.props);
+    return (
+      React.DOM.div( {className:"row"}, 
+        React.DOM.div( {className:"col-md-8 col-md-offset-2"}, 
+          React.DOM.h1(null, "Learn you the basic math for much win"), 
+          renderState(this.state.activeState, this.props)
+        )
+      )
+    );
   }
 });
 
@@ -11201,7 +11218,7 @@ _.extend(MathClient.prototype, {
 
 module.exports = MathClient;
 
-},{"./../../modules/game/Game":1,"./states/InLobby":14,"./states/InRoom":15,"./states/Loading":16,"events":18,"lodash":5,"tiny-clock":7}],14:[function(require,module,exports){
+},{"./../../modules/game/Game":1,"./states/InLobby":14,"./states/InRoom":15,"./states/Loading":16,"events":19,"lodash":5,"tiny-clock":7}],14:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash')
   , GameState = require('./../../../modules/game/GameState');
 
@@ -11284,6 +11301,21 @@ _.extend(Loading.prototype, {
 module.exports = Loading;
 
 },{"./../../../modules/game/GameState":2,"lodash":5}],17:[function(require,module,exports){
+/** @jsx React.DOM */var NavBar = React.createClass({displayName: 'NavBar',
+  render: function () {
+    return (
+      React.DOM.nav( {className:"navbar navbar-inverse navbar-static-top", role:"navigation"}, 
+        React.DOM.div( {className:"navbar-header"}, 
+          React.DOM.a( {className:"navbar-brand", href:"#"}, "++win")
+        )
+      ) 
+    ); 
+  },
+});
+
+module.exports = NavBar;
+
+},{}],18:[function(require,module,exports){
 
 
 //
@@ -11501,7 +11533,7 @@ if (typeof Object.getOwnPropertyDescriptor === 'function') {
   exports.getOwnPropertyDescriptor = valueObject;
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -11782,7 +11814,7 @@ EventEmitter.listenerCount = function(emitter, type) {
     ret = emitter._events[type].length;
   return ret;
 };
-},{"util":19}],19:[function(require,module,exports){
+},{"util":20}],20:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12327,5 +12359,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-},{"_shims":17}]},{},[8])
+},{"_shims":18}]},{},[8])
 ;

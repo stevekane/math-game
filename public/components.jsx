@@ -63,16 +63,16 @@ var PlayerList = React.createClass({
 var Room = React.createClass({
   render: function () {
     return (
-      <div className="row">
-        <aside className="col-md-2">
-          <PlayerList players={this.props.players} />
-        </aside>
-
-        <section className="col-md-4">
-          <h1>{this.props.question}</h1>
-          <h2>{this.props.answer}</h2>
+      <div className="col-md-9">
+        <section className="col-md-9">
+          <h1>Question: {this.props.question}</h1>
+          <h2>Answer: {this.props.answer}</h2>
           <AnswerInput cloak={this.props.cloak} />
         </section>
+
+        <aside className="col-md-3">
+          <PlayerList players={this.props.players} />
+        </aside>
       </div>
     ); 
   }
@@ -81,7 +81,8 @@ var Room = React.createClass({
 var createRoomTile = _.curry(function (context, clickHandler, room) {
   return (
     <li onClick={clickHandler.bind(context, room)} className="list-group-item">
-      {room.name}{room.users.length}
+      <span className="badge">{room.users.length}</span>
+      {room.name}
     </li>
   );
 });
@@ -97,14 +98,11 @@ var Lobby = React.createClass({
       , self = this;
       
     return (
-      <div className="row">
-        <div className="col-md-4">
-          <h1>Dat Lobby</h1>
-          <ul className="col-md-4 list-group">
-            {rooms.map(createRoomTile(self, self.selectRoom))}
-          </ul> 
-        </div>
-      </div>  
+      <div className="col-md-3">
+        <ul className="list-group">
+          {rooms.map(createRoomTile(self, self.selectRoom))}
+        </ul> 
+      </div>
     ); 
   }
 });
@@ -118,10 +116,15 @@ var Loading = React.createClass({
 var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return <Lobby rooms={props.rooms} game={props.game}/>
+      return <Lobby rooms={props.rooms} game={props.game} />
       break;
     case "in-room":
-      return <Room players={[]} question="" answer="" />
+      return (
+        <div>
+          <Lobby rooms={props.rooms} game={props.game} />
+          <Room players={[]} question="" answer="" />
+        </div>
+      );
       break;
     default:
       return <Loading /> 
@@ -138,7 +141,14 @@ var GameComponent = React.createClass({
   }, 
 
   render: function () {
-    return renderState(this.state.activeState, this.props);
+    return (
+      <div className="row">
+        <div className="col-md-8 col-md-offset-2">
+          <h1>Learn you the basic math for much win</h1> 
+          {renderState(this.state.activeState, this.props)}
+        </div>
+      </div>
+    );
   }
 });
 

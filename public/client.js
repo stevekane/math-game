@@ -1,6 +1,9 @@
 var Game = require('./game/MathClient')
   , cloak = require('cloak-browserify')
-  , components = require('./components.jsx');
+  , NavBar = require('./navbar.jsx')
+  , components = require('./components.jsx')
+  , navDiv = document.getElementById('nav')
+  , contentDiv = document.getElementById('content');
 
 var game = new Game;
 
@@ -10,7 +13,11 @@ game.cloak = cloak;
 var gui = React.renderComponent(components.GameComponent({
   game: game,
   rooms: []
-}), document.body);
+}), contentDiv);
+
+var nav = React.renderComponent(NavBar({
+  
+}), navDiv);
 
 game.on('transition', function (name) {
   gui.setState({
