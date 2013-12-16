@@ -76,20 +76,28 @@ var Room = React.createClass({
   }
 });
 
-var createRoomTile = function (room) {
-  return <li className="list-group-item">{room.name}{room.users.length}</li>
-};
-
 var Lobby = React.createClass({
+  
+  selectRoom: function (room) {
+    this.props.game.cloak.message("join", room.name);
+  },
+  
   render: function () {
-    var rooms = this.props.rooms;
-
+    var rooms = this.props.rooms
+      , self = this;
+      
     return (
       <div className="row">
         <div className="col-md-4">
           <h1>Dat Lobby</h1>
           <ul className="col-md-4 list-group">
-            {rooms.map(createRoomTile)}
+            {rooms.map(function (room, i) {
+              return (
+                <li onClick={self.selectRoom.bind(self, room)} className="list-group-item">
+                  {room.name}{room.users.length}
+                </li>
+              );
+            })}
           </ul> 
         </div>
       </div>  
@@ -106,7 +114,7 @@ var Loading = React.createClass({
 var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return <Lobby rooms={props.rooms} />
+      return <Lobby rooms={props.rooms} game={props.game}/>
       break;
     case "in-room":
       return <Room players={[]} question="" answer="" />

@@ -11011,20 +11011,28 @@ var Room = React.createClass({displayName: 'Room',
   }
 });
 
-var createRoomTile = function (room) {
-  return React.DOM.li( {className:"list-group-item"}, room.name,room.users.length)
-};
-
 var Lobby = React.createClass({displayName: 'Lobby',
+  
+  selectRoom: function (room) {
+    this.props.game.cloak.message("join", room.name);
+  },
+  
   render: function () {
-    var rooms = this.props.rooms;
-
+    var rooms = this.props.rooms
+      , self = this;
+      
     return (
       React.DOM.div( {className:"row"}, 
         React.DOM.div( {className:"col-md-4"}, 
           React.DOM.h1(null, "Dat Lobby"),
           React.DOM.ul( {className:"col-md-4 list-group"}, 
-            rooms.map(createRoomTile)
+            rooms.map(function (room, i) {
+              return (
+                React.DOM.li( {onClick:self.selectRoom.bind(self, room), className:"list-group-item"}, 
+                  room.name,room.users.length
+                )
+              );
+            })
           ) 
         )
       )  
@@ -11041,7 +11049,7 @@ var Loading = React.createClass({displayName: 'Loading',
 var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return Lobby( {rooms:props.rooms} )
+      return Lobby( {rooms:props.rooms, game:props.game})
       break;
     case "in-room":
       return Room( {players:[], question:"", answer:""} )
