@@ -10898,6 +10898,9 @@ var game = new Game;
 
 //inject ref to cloak onto the game
 game.cloak = cloak;
+var gui = React.renderComponent(components.GameComponent({
+  game: game 
+}), document.body);
 
 //register all our socket events with a ref to game
 var serverEvents = require('./events/server')(game)
@@ -10934,7 +10937,7 @@ cloak.run(cloak.port);
   submit: function (value) {
     this.props.cloak.message('answer', value);
     this.setState({
-      value: "",
+      value: ""
     });
   },
 
@@ -10963,7 +10966,7 @@ var PlayerList = React.createClass({displayName: 'PlayerList',
     var players = this.props.players;
 
     if (!players) {
-      return React.DOM.p(null, "Nothing"); 
+      return React.DOM.li( {className:"player"}, "No players."); 
     }
 
     return (
@@ -11002,6 +11005,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
 
     return (
       React.DOM.div( {className:"row"}, 
+        React.DOM.h1(null, "Dat Lobby"),
         React.DOM.ul( {className:"col-md-4 list-group"}, 
           rooms.map(createRoomTile)
         ) 
@@ -11010,8 +11014,43 @@ var Lobby = React.createClass({displayName: 'Lobby',
   }
 });
 
-module.exports.AnswerInput = AnswerInput;
-module.exports.Room = Room;
+var Loading = React.createClass({displayName: 'Loading',
+  render: function () {
+    return React.DOM.h1(null, "Loading"); 
+  }
+});
+
+var renderState = function (stateName) {
+  switch (stateName) {
+    case "in-lobby":
+      return Lobby(null )
+      break;
+    case "in-room":
+      return Room( {players:"[]", question:"", answer:""} )
+      break;
+    default:
+      return Loading(null ) 
+      break;
+  };
+};
+
+var GameComponent = React.createClass({displayName: 'GameComponent',
+  getInitialState: function () {
+    return {
+      states: ['loading', 'in-lobby', 'in-room'],
+      activeState: 'loading'
+    };
+  }, 
+
+  render: function () {
+    var activeState = this.state.activeState;
+    console.log(this.props.game);
+
+    return renderState(activeState);  
+  }
+});
+
+module.exports.GameComponent = GameComponent;
 
 },{}],10:[function(require,module,exports){
 /** @jsx React.DOM */module.exports = function (game) {
@@ -11126,7 +11165,8 @@ _.extend(MathClient.prototype, {
   newQuestion: function () {},
   showAnswer: function () {},
   updateScores: function () {},
-  roomMemberJoined: function (user) {}
+  roomMemberJoined: function (user) {},
+  roomMemberLeft: function (user) {},
 
 });
 
@@ -11183,7 +11223,7 @@ _.extend(InRoom.prototype, {
   },
 
   roomMemberJoined: function (user) {
-    console.log('roomMmberJoined', user);
+    console.log('roomMemberJoined', user);
     this.players.push(user); 
   },
 

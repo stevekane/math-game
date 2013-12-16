@@ -7,6 +7,9 @@ var game = new Game;
 
 //inject ref to cloak onto the game
 game.cloak = cloak;
+var gui = React.renderComponent(components.GameComponent({
+  game: game 
+}), document.body);
 
 //register all our socket events with a ref to game
 var serverEvents = require('./events/server')(game)

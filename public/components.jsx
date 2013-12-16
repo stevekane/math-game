@@ -18,7 +18,7 @@ var AnswerInput = React.createClass({
   submit: function (value) {
     this.props.cloak.message('answer', value);
     this.setState({
-      value: "",
+      value: ""
     });
   },
 
@@ -47,7 +47,7 @@ var PlayerList = React.createClass({
     var players = this.props.players;
 
     if (!players) {
-      return <p>Nothing</p>; 
+      return <li className="player">No players.</li>; 
     }
 
     return (
@@ -86,6 +86,7 @@ var Lobby = React.createClass({
 
     return (
       <div className="row">
+        <h1>Dat Lobby</h1>
         <ul className="col-md-4 list-group">
           {rooms.map(createRoomTile)}
         </ul> 
@@ -94,5 +95,40 @@ var Lobby = React.createClass({
   }
 });
 
-module.exports.AnswerInput = AnswerInput;
-module.exports.Room = Room;
+var Loading = React.createClass({
+  render: function () {
+    return <h1>Loading</h1>; 
+  }
+});
+
+var renderState = function (stateName) {
+  switch (stateName) {
+    case "in-lobby":
+      return <Lobby />
+      break;
+    case "in-room":
+      return <Room players="[]" question="" answer="" />
+      break;
+    default:
+      return <Loading /> 
+      break;
+  };
+};
+
+var GameComponent = React.createClass({
+  getInitialState: function () {
+    return {
+      states: ['loading', 'in-lobby', 'in-room'],
+      activeState: 'loading'
+    };
+  }, 
+
+  render: function () {
+    var activeState = this.state.activeState;
+    console.log(this.props.game);
+
+    return renderState(activeState);  
+  }
+});
+
+module.exports.GameComponent = GameComponent;

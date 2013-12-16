@@ -16,4 +16,5 @@ module.exports = function (game) {
     scores: function (pointTotals) {
       game.send("updateScores", pointTotals); 
     },
+  };
 };
