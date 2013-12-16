@@ -1,4 +1,5 @@
 var _ = require('lodash')
+  , EventEmitter = require('events').EventEmitter
   , Game = require('./../../modules/game/Game')
   , Clock = require('tiny-clock')
   , InLobby = require('./states/InLobby')

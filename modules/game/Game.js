@@ -1,4 +1,5 @@
-var _ = require('lodash')
+var EventEmitter = require('events').EventEmitter
+  , _ = require('lodash')
   , throwIf = require('power-throw').throwIf
   , throwUnless = require('power-throw').throwUnless;
 
@@ -11,7 +12,7 @@ var Game = function (room, clock) {
   this.activeState = null;
 };
 
-Game.prototype = Object.create({});
+Game.prototype = Object.create(EventEmitter.prototype);
 
 /**
 Send is used to send events by name to the currently activeState
@@ -26,6 +27,7 @@ call it.
 If the game object also does not have a function by the provided name,
 we throw an error and cry a lot and whine and make a big fuss.
 */
+
 Game.prototype.send = function (name) {
   var args = slice(arguments, 1);
 
@@ -86,6 +88,7 @@ Game.prototype.transitionTo = function (name) {
       targetState.enter.apply(targetState, args);
     }
     this.activeState = targetState;
+    this.emit("transition", targetState.name);
   }
   return this;
 };

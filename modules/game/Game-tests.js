@@ -239,6 +239,25 @@ function (t) {
     .transitionTo("state1", arg1, arg2);
 });
 
+test("Game.transitionTo should emit a 'transition' event with the targetState's name", 
+function (t) {
+  t.plan(1);
+  var game = new Game();
+  var state1 = {
+    name: "state1",
+  };
+  var state2 = {
+    name: "state2",
+  };
+  game.on('transition', function (stateName) {
+    t.same(stateName, "state2", "game emits transition event with targetState's name");
+  });
+  game
+    .addState(state1)
+    .addState(state2)
+    .transitionTo("state2")
+});
+
 test(
 "Game.transitionTo should NOT call the current activeState's exit method OR the" +
 "targetted state's enter method if the target state is the current activeState.  it's a no-op",

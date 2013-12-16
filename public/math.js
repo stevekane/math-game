@@ -1,5 +1,6 @@
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/** @jsx React.DOM */var _ = require('lodash')
+/** @jsx React.DOM */var EventEmitter = require('events').EventEmitter
+  , _ = require('lodash')
   , throwIf = require('power-throw').throwIf
   , throwUnless = require('power-throw').throwUnless;
 
@@ -12,7 +13,7 @@ var Game = function (room, clock) {
   this.activeState = null;
 };
 
-Game.prototype = Object.create({});
+Game.prototype = Object.create(EventEmitter.prototype);
 
 /**
 Send is used to send events by name to the currently activeState
@@ -27,6 +28,7 @@ call it.
 If the game object also does not have a function by the provided name,
 we throw an error and cry a lot and whine and make a big fuss.
 */
+
 Game.prototype.send = function (name) {
   var args = slice(arguments, 1);
 
@@ -87,13 +89,14 @@ Game.prototype.transitionTo = function (name) {
       targetState.enter.apply(targetState, args);
     }
     this.activeState = targetState;
+    this.emit("transition", targetState.name);
   }
   return this;
 };
 
 module.exports = Game;
 
-},{"lodash":5,"power-throw":6}],2:[function(require,module,exports){
+},{"events":18,"lodash":5,"power-throw":6}],2:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash')
   , throwUnless = require('power-throw').throwUnless;
 
@@ -10889,8 +10892,7 @@ Clock.prototype.getElapsed = function () {
 module.exports = Clock;
 
 },{}],8:[function(require,module,exports){
-/** @jsx React.DOM */var events = require('events')
-  , Game = require('./game/MathClient')
+/** @jsx React.DOM */var Game = require('./game/MathClient')
   , cloak = require('cloak-browserify')
   , components = require('./components.jsx');
 
@@ -10898,9 +10900,14 @@ var game = new Game;
 
 //inject ref to cloak onto the game
 game.cloak = cloak;
+
 var gui = React.renderComponent(components.GameComponent({
   game: game 
 }), document.body);
+
+game.on('transition', function (name) {
+  console.log('a trans yall', name);
+});
 
 //register all our socket events with a ref to game
 var serverEvents = require('./events/server')(game)
@@ -10916,7 +10923,7 @@ cloak.configure({
 cloak.port = "http://localhost:1337",
 cloak.run(cloak.port);
 
-},{"./components.jsx":9,"./events/custom":10,"./events/server":11,"./events/timer":12,"./game/MathClient":13,"cloak-browserify":3,"events":18}],9:[function(require,module,exports){
+},{"./components.jsx":9,"./events/custom":10,"./events/server":11,"./events/timer":12,"./game/MathClient":13,"cloak-browserify":3}],9:[function(require,module,exports){
 /** @jsx React.DOM */var AnswerInput = React.createClass({displayName: 'AnswerInput',
   getInitialState: function () {
     return {
@@ -11131,6 +11138,7 @@ module.exports = function (game) {
 
 },{}],13:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash')
+  , EventEmitter = require('events').EventEmitter
   , Game = require('./../../modules/game/Game')
   , Clock = require('tiny-clock')
   , InLobby = require('./states/InLobby')
@@ -11172,7 +11180,7 @@ _.extend(MathClient.prototype, {
 
 module.exports = MathClient;
 
-},{"./../../modules/game/Game":1,"./states/InLobby":14,"./states/InRoom":15,"./states/Loading":16,"lodash":5,"tiny-clock":7}],14:[function(require,module,exports){
+},{"./../../modules/game/Game":1,"./states/InLobby":14,"./states/InRoom":15,"./states/Loading":16,"events":18,"lodash":5,"tiny-clock":7}],14:[function(require,module,exports){
 /** @jsx React.DOM */var _ = require('lodash')
   , GameState = require('./../../../modules/game/GameState');
 
