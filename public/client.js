@@ -8,11 +8,20 @@ var game = new Game;
 game.cloak = cloak;
 
 var gui = React.renderComponent(components.GameComponent({
-  game: game 
+  game: game,
+  rooms: []
 }), document.body);
 
 game.on('transition', function (name) {
-  console.log('a trans yall', name);
+  gui.setState({
+    activeState: name   
+  });
+});
+
+game.on('rooms', function (rooms) {
+  gui.setProps({
+    rooms: rooms 
+  });
 });
 
 //register all our socket events with a ref to game

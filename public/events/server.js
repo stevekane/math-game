@@ -7,9 +7,6 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
-      window.setTimeout(function () {
-        game.cloak.message("join", "addition");  
-      }, 2000);
     },
     resume: function () {
       console.log("you have re-connected!"); 

@@ -1,7 +1,7 @@
 module.exports = function (game) {
   return {
-    echo: function (data) {
-      console.log("server responded with ", data);
+    rooms: function (rooms) {
+      game.updateRooms(rooms);
     },
 
     //called when a new problem has arrived

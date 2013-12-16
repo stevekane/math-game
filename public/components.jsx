@@ -77,7 +77,7 @@ var Room = React.createClass({
 });
 
 var createRoomTile = function (room) {
-  return <li className="list-group-item">{room.title}</li>
+  return <li className="list-group-item">{room.name}{room.users.length}</li>
 };
 
 var Lobby = React.createClass({
@@ -86,10 +86,12 @@ var Lobby = React.createClass({
 
     return (
       <div className="row">
-        <h1>Dat Lobby</h1>
-        <ul className="col-md-4 list-group">
-          {rooms.map(createRoomTile)}
-        </ul> 
+        <div className="col-md-4">
+          <h1>Dat Lobby</h1>
+          <ul className="col-md-4 list-group">
+            {rooms.map(createRoomTile)}
+          </ul> 
+        </div>
       </div>  
     ); 
   }
@@ -101,13 +103,13 @@ var Loading = React.createClass({
   }
 });
 
-var renderState = function (stateName) {
+var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return <Lobby />
+      return <Lobby rooms={props.rooms} />
       break;
     case "in-room":
-      return <Room players="[]" question="" answer="" />
+      return <Room players={[]} question="" answer="" />
       break;
     default:
       return <Loading /> 
@@ -124,10 +126,7 @@ var GameComponent = React.createClass({
   }, 
 
   render: function () {
-    var activeState = this.state.activeState;
-    console.log(this.props.game);
-
-    return renderState(activeState);  
+    return renderState(this.state.activeState, this.props);
   }
 });
 

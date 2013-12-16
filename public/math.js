@@ -10902,11 +10902,20 @@ var game = new Game;
 game.cloak = cloak;
 
 var gui = React.renderComponent(components.GameComponent({
-  game: game 
+  game: game,
+  rooms: []
 }), document.body);
 
 game.on('transition', function (name) {
-  console.log('a trans yall', name);
+  gui.setState({
+    activeState: name   
+  });
+});
+
+game.on('rooms', function (rooms) {
+  gui.setProps({
+    rooms: rooms 
+  });
 });
 
 //register all our socket events with a ref to game
@@ -11003,7 +11012,7 @@ var Room = React.createClass({displayName: 'Room',
 });
 
 var createRoomTile = function (room) {
-  return React.DOM.li( {className:"list-group-item"}, room.title)
+  return React.DOM.li( {className:"list-group-item"}, room.name,room.users.length)
 };
 
 var Lobby = React.createClass({displayName: 'Lobby',
@@ -11012,10 +11021,12 @@ var Lobby = React.createClass({displayName: 'Lobby',
 
     return (
       React.DOM.div( {className:"row"}, 
-        React.DOM.h1(null, "Dat Lobby"),
-        React.DOM.ul( {className:"col-md-4 list-group"}, 
-          rooms.map(createRoomTile)
-        ) 
+        React.DOM.div( {className:"col-md-4"}, 
+          React.DOM.h1(null, "Dat Lobby"),
+          React.DOM.ul( {className:"col-md-4 list-group"}, 
+            rooms.map(createRoomTile)
+          ) 
+        )
       )  
     ); 
   }
@@ -11027,13 +11038,13 @@ var Loading = React.createClass({displayName: 'Loading',
   }
 });
 
-var renderState = function (stateName) {
+var renderState = function (stateName, props) {
   switch (stateName) {
     case "in-lobby":
-      return Lobby(null )
+      return Lobby( {rooms:props.rooms} )
       break;
     case "in-room":
-      return Room( {players:"[]", question:"", answer:""} )
+      return Room( {players:[], question:"", answer:""} )
       break;
     default:
       return Loading(null ) 
@@ -11050,10 +11061,7 @@ var GameComponent = React.createClass({displayName: 'GameComponent',
   }, 
 
   render: function () {
-    var activeState = this.state.activeState;
-    console.log(this.props.game);
-
-    return renderState(activeState);  
+    return renderState(this.state.activeState, this.props);
   }
 });
 
@@ -11062,8 +11070,8 @@ module.exports.GameComponent = GameComponent;
 },{}],10:[function(require,module,exports){
 /** @jsx React.DOM */module.exports = function (game) {
   return {
-    echo: function (data) {
-      console.log("server responded with ", data);
+    rooms: function (rooms) {
+      game.updateRooms(rooms);
     },
 
     //called when a new problem has arrived
@@ -11091,9 +11099,6 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
-      window.setTimeout(function () {
-        game.cloak.message("join", "addition");  
-      }, 2000);
     },
     resume: function () {
       console.log("you have re-connected!"); 
@@ -11170,6 +11175,10 @@ MathClient.prototype = Object.create(Game.prototype);
 
 _.extend(MathClient.prototype, {
   
+  updateRooms: function (rooms) {
+    this.rooms = rooms; 
+    this.emit('rooms', rooms);
+  },
   newQuestion: function () {},
   showAnswer: function () {},
   updateScores: function () {},

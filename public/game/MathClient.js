@@ -31,6 +31,10 @@ MathClient.prototype = Object.create(Game.prototype);
 
 _.extend(MathClient.prototype, {
   
+  updateRooms: function (rooms) {
+    this.rooms = rooms; 
+    this.emit('rooms', rooms);
+  },
   newQuestion: function () {},
   showAnswer: function () {},
   updateScores: function () {},
