@@ -29,9 +29,7 @@ MathGame.prototype = Object.create(Game.prototype);
 
 _.extend(MathGame.prototype, {
 
-  tick: function () {
-    console.log('tick handled by MathGame'); 
-  },
+  tick: function () {},
 
   roomIsEmpty: function () {
     this.transitionTo('waiting'); 

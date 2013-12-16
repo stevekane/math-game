@@ -10752,51 +10752,44 @@ var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? 
 },{}],4:[function(require,module,exports){
 /** @jsx React.DOM *///modified version of cloak's client to be used with browserify
 var cloak = require('cloak-browserify')
-  , components = require('./components.jsx');
+  , components = require('./components.jsx')
+  , questionNode = document.querySelectorAll('#current-question')[0]
+  , answerNode = document.querySelectorAll('#current-answer')[0];
 
-var Game = function (options) {
-  this.question = "";
-  this.answer = "";
-  this.players = [];
-  this.ui = options.ui;
-};
+
+var Game = function () {};
+
 Game.prototype = Object.create({});
-Game.prototype.start = function () {
-  this.ui.start();
-};
 
-var UI = function (hud) {
-  this.hud = hud({
-    cloak: cloak,
-    question: "",
-    answer: ""
-  });
-};
-UI.prototype = Object.create({});
-UI.prototype.start = function () {
-  React.renderComponent(this.hud, document.body);
-};
+console.log('hi');
+React.renderComponent(Question(null ), questionNode);
 
-var ui = new UI(components.HUD);
-
-Game.prototype.newQuestion = function (newQuestion) {
-  this.question = newQuestion;
-  this.answer = "";
-  this.ui.hud.setProps({
-    question: newQuestion,
-    answer: ""
-  });
+Game.prototype.newQuestion = function (question) {
+  console.log('new question');   
 };
 Game.prototype.showAnswer = function (answer) {
-  this.answer = answer;
-  this.ui.hud.setProps({answer: answer});
+  document.querySelectorAll('#current-answer')[0].innerText = answer;
 };
 Game.prototype.updateScores = function (pointTotals) {
   console.log(pointTotals);
 };
 
-var game = new Game({ui: ui});
-game.start();
+var game = new Game;
+
+var input = document.getElementById('answer-input');
+input.onsubmit = function () {};
+input.addEventListener('keydown', function (e) {
+  var answer = input.value;
+
+  if (e.keyCode === 13) {
+    console.log('enter detected with value ', answer);
+    cloak.message('answer', answer);
+    input.value = "";
+    e.preventDefault(); 
+    return false;
+  }
+  return true;
+});
 
 //explicitly inject cloak onto the game object allowing us to
 //delegate to the network layer
@@ -10818,72 +10811,24 @@ cloak.run(cloakPort);
 
 },{"./components.jsx":5,"./events/custom":6,"./events/server":7,"./events/timer":8,"cloak-browserify":1}],5:[function(require,module,exports){
 /** @jsx React.DOM */var Question = React.createClass({displayName: 'Question',
-  render: function () {
-    return React.DOM.div(null, "Current Question: " + this.props.question);
-  },
-});
-
-var Answer = React.createClass({displayName: 'Answer',
-  render: function () {
-    return React.DOM.div(null, "Current Answer: " + this.props.answer);
-  },
-});
-
-var AnswerInput = React.createClass({displayName: 'AnswerInput',
   getInitialState: function () {
     return {
-      value: "",
+      question: "",  
     }; 
   },
 
-  keyDown: function (e) {
-    var el = this.getDOMNode()
-      , value = el.value;
-
-    if (e.keyCode === 13) {
-      this.props.cloak.message('answer', value);
-      this.setState({
-        value: "",
-      });
-      e.preventDefault(); 
-      e.stopPropagation();
-      return false;
-    }
-    return true;
-  },
-
-  handleChange: function (e) {
-    this.setState({value: e.target.value}); 
+  updateQuestion: function (question) {
+    this.setState({
+      question: question 
+    }); 
   },
 
   render: function () {
-    return (
-      React.DOM.input(
-        {type:"text",
-        className:"form-control",
-        value:this.state.value,
-        onChange:this.handleChange,
-        onKeyDown:this.keyDown} )
-    ); 
-  },  
+    return React.DOM.div(null, "Current Question: " + this.state.question);
+  },
 });
 
-var HUD = React.createClass({displayName: 'HUD',
-  render: function () {
-    return (
-      React.DOM.div(null, 
-        Question( {question:this.props.question} ),
-        Answer( {answer:this.props.answer} ),
-        AnswerInput( {cloak:this.props.cloak} )
-      )
-    ); 
-  }
-});
-
-module.exports.Question = Question;
-module.exports.Answer = Answer;
-module.exports.AnswerInput = AnswerInput;
-module.exports.HUD = HUD;
+module.exports = Question;
 
 },{}],6:[function(require,module,exports){
 /** @jsx React.DOM */module.exports = function (game) {
