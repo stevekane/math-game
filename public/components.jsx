@@ -1,15 +1,3 @@
-var Question = React.createClass({
-  render: function () {
-    return <div>{"Current Question: " + this.props.question}</div>;
-  },
-});
-
-var Answer = React.createClass({
-  render: function () {
-    return <div>{"Current Answer: " + this.props.answer}</div>;
-  },
-});
-
 var AnswerInput = React.createClass({
   getInitialState: function () {
     return {
@@ -18,19 +6,20 @@ var AnswerInput = React.createClass({
   },
 
   keyDown: function (e) {
-    var el = this.getDOMNode()
-      , value = el.value;
-
     if (e.keyCode === 13) {
-      this.props.cloak.message('answer', value);
-      this.setState({
-        value: "",
-      });
+      this.submit(this.state.value);
       e.preventDefault(); 
       e.stopPropagation();
       return false;
     }
     return true;
+  },
+
+  submit: function (value) {
+    this.props.cloak.message('answer', value);
+    this.setState({
+      value: "",
+    });
   },
 
   handleChange: function (e) {
@@ -49,19 +38,61 @@ var AnswerInput = React.createClass({
   },  
 });
 
-var HUD = React.createClass({
+var createPlayerSummary = function (player) {
+  return <li className="player">{player.id + player.score}</li>
+};
+
+var PlayerList = React.createClass({
+  render: function () {
+    var players = this.props.players;
+
+    if (!players) {
+      return <p>Nothing</p>; 
+    }
+
+    return (
+      <ul className="player-list">
+        {players.map(createPlayerSummary)}
+      </ul>
+    );
+  }
+});
+
+var Room = React.createClass({
   render: function () {
     return (
-      <div>
-        <Question question={this.props.question} />
-        <Answer answer={this.props.answer} />
-        <AnswerInput cloak={this.props.cloak} />
+      <div className="row">
+        <aside className="col-md-2">
+          <PlayerList players={this.props.players} />
+        </aside>
+
+        <section className="col-md-4">
+          <h1>{this.props.question}</h1>
+          <h2>{this.props.answer}</h2>
+          <AnswerInput cloak={this.props.cloak} />
+        </section>
       </div>
     ); 
   }
 });
 
-module.exports.Question = Question;
-module.exports.Answer = Answer;
+var createRoomTile = function (room) {
+  return <li className="list-group-item">{room.title}</li>
+};
+
+var Lobby = React.createClass({
+  render: function () {
+    var rooms = this.props.rooms;
+
+    return (
+      <div className="row">
+        <ul className="col-md-4 list-group">
+          {rooms.map(createRoomTile)}
+        </ul> 
+      </div>  
+    ); 
+  }
+});
+
 module.exports.AnswerInput = AnswerInput;
-module.exports.HUD = HUD;
+module.exports.Room = Room;

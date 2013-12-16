@@ -6,15 +6,14 @@ module.exports = function (game) {
 
     //called when a new problem has arrived
     question: function (question) {
-      game.newQuestion(question);
+      game.send("newQuestion", question);
     },
 
     answer: function (answer) {
-      game.showAnswer(answer);
+      game.send("showAnswer", answer);
     },
 
     scores: function (pointTotals) {
-      game.updateScores(pointTotals); 
+      game.send("updateScores", pointTotals); 
     },
-  };
 };

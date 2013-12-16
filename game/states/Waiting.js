@@ -20,7 +20,6 @@ _.extend(Waiting.prototype, {
     this.game.transitionTo('collecting-answers'); 
   },
 
-  //FIXME: no-op...possibly remove or change transitionTo mechanics to be no-op
   //if targetState is same as activeState
   roomIsEmpty: function () {},
 

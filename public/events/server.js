@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = function (game) {
   return {
     connecting: function () {
@@ -5,11 +7,12 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
-      game.cloak.message('join', 'addition');
+      window.setTimeout(function () {
+        game.cloak.message("join", "addition");  
+      }, 2000);
     },
     resume: function () {
       console.log("you have re-connected!"); 
-      game.cloak.message('join', 'addition');
     },
     disconnect: function () {
       console.log("you have disconnected!"); 
@@ -18,12 +21,23 @@ module.exports = function (game) {
     error: function (err) {
       console.log("there was an error when connecting"); 
     },
+
     joinedRoom: function (roomName) {
-      console.log("you joined room ", roomName); 
+      if ("Lobby" === roomName.name) {
+        game.transitionTo("in-lobby"); 
+      } else {
+        game.transitionTo("in-room"); 
+      }
     },
+
     leftRoom: function (roomName) {},
-    roomMemberJoined: function (user) {},
-    roomMemberLeft: function (user) {},
+
+    roomMemberJoined: function (user) {
+      game.send('roomMemberJoined', user);
+    },
+    roomMemberLeft: function (user) {
+      game.send('roomMemberLeft', user);
+    },
     lobbyMemberJoined: function (user) {},
     lobbyMemberLeft: function (user) {},
     roomCreated: function (roomCount) {},
