@@ -4,8 +4,6 @@ var _ = require('lodash')
 var CollectingAnswers = function (name) {
   this.name = name || "collecting-answers";
   this.submissions = [];
-  this.currentQuestion = null;
-  this.currentAnswer = null;
   this.duration = 7000;
 };
 
@@ -59,12 +57,13 @@ _.extend(CollectingAnswers.prototype, {
     var pointTotals;
 
     if (this.game.clock.getElapsed() > this.duration) {
-      pointTotals = calculatePointTotals(this.currentAnswer, this.submissions);
+      pointTotals = calculatePointTotals(this.game.currentAnswer, this.submissions);
       console.log("Point totals:", pointTotals);
       //this.game.persistence.save(pointTotals);
       this.game.room.messageMembers("scores", pointTotals);
-      this.game.transitionTo("displaying-answer", this.currentAnswer);   
+      this.game.transitionTo("displaying-answer", this.game.currentAnswer);   
     }
+    this.game.room.messageMembers("tick", "tickdata");
   },
 
   /**
@@ -78,10 +77,10 @@ _.extend(CollectingAnswers.prototype, {
     this.submissions = [];
     this.game.clock.startTime = now;
     this.game.clock.timeStamp = now;
-    this.currentQuestion = problem.question;
-    this.currentAnswer = problem.answer;
-    this.game.room.messageMembers("question", this.currentQuestion);
-    console.log("Problem is: ", this.currentQuestion);
+    this.game.currentQuestion = problem.question;
+    this.game.currentAnswer = problem.answer;
+    this.game.room.messageMembers("question", this.game.currentQuestion);
+    console.log("Problem is: ", this.game.currentQuestion);
   },
 
   exit: function () {

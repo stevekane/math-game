@@ -11103,8 +11103,13 @@ module.exports.GameComponent = GameComponent;
       game.updateRooms(rooms);
     },
 
+    tick: function () {
+      console.log('tick recieved'); 
+    },
+
     //called when a new problem has arrived
     question: function (question) {
+      console.log(question);
       game.send("newQuestion", question);
     },
 
@@ -11128,6 +11133,7 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
+      game.cloak.message("joinLobby");
     },
     resume: function () {
       console.log("you have re-connected!"); 

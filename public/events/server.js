@@ -7,6 +7,7 @@ module.exports = function (game) {
     },
     begin: function () {
       console.log("you have connected!"); 
+      game.cloak.message("joinLobby");
     },
     resume: function () {
       console.log("you have re-connected!"); 

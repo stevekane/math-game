@@ -5,15 +5,13 @@ var  _ = require('lodash')
 //CollectingAnswers
 test("CollectingAnswers is a constructor that sets a several attributes",
 function (t) {
-  t.plan(6);
+  t.plan(4);
   var ca = new CollectingAnswers;
 
   t.ok(typeof CollectingAnswers === "function", "CollectingAnswers is a constructor");
   t.ok(typeof ca === "object", "CollectingAnswers produces an instance");
   t.same(ca.name, "collecting-answers", "attribute name is  'collecting-answers'");
   t.ok(_.isArray(ca.submissions), "submissions is an array");
-  t.same(ca.currentAnswer, null, "currentAnswer is null");
-  t.same(ca.currentQuestion, null, "currentQuestion is null");
 });
 
 //enqueueSubmission

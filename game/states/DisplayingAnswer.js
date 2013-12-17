@@ -3,7 +3,6 @@ var _ = require('lodash')
 
 var DisplayingAnswer = function (name) {
   this.name = name || "displaying-answer";
-  this.currentAnswer = null;
   this.duration = 2000;
 };
 

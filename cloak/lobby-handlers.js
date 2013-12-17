@@ -10,7 +10,7 @@ module.exports = function (cloak) {
     }, 
 
     pulse: function () {
-      this.messageMembers("rooms", cloak.getRooms(true)); 
+      cloak.messageAll("rooms", cloak.getRooms(true)); 
     },
 
     newMember: function (user) {

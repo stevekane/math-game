@@ -15,6 +15,8 @@ var MathGame = function (options) {
   var states = options.states || defaultStates
     , self = this;
 
+  this.currentQuestion = null;
+  this.currentAnswer = null;
   this.room = options.room || null; 
   this.clock = options.clock || new Clock;
   this.states = [];
@@ -37,6 +39,22 @@ _.extend(MathGame.prototype, {
 
   //no-op
   roomNotEmpty: function () {},
+
+  //TODO: NOT FINISHED!!!
+  serializeSelf: function () {
+    var userData = this.room.getMembers(true).map(function (user) {
+      return {
+        id: user.id,
+        name: user.name,
+        points: user.points
+      };
+    });
+    return {
+      question: this.currentQuestion,
+      answer: this.currentAnswer,
+      room: this.room,
+    }
+  },
 });
 
 module.exports = MathGame;

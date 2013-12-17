@@ -3,11 +3,17 @@ var _ = require('lodash');
 module.exports = function (cloak) {
   return {
 
+    joinLobby: function (data, user) {
+      cloak.getLobby().addMember(user); 
+    },
+
     //join a specific room.
     join: function (roomName, user) {
       var targetRoom = _.find(cloak.getRooms(), {name: roomName});
+
       if (targetRoom) {
-        user.joinRoom(targetRoom);
+        targetRoom.addMember(user);
+        console.log(targetRoom.getMembers(true));
       }
     },
 

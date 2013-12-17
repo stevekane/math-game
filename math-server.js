@@ -2,13 +2,10 @@ var http = require('http')
   , ecstatic = require('ecstatic')
   , cloak = require('cloak');
 
-//create our game object, and instances of our states
-var MathGame = require('./game/MathGame');
-
 //custom and room socket event handlers, pass a reference to cloak
-var clientMessageHandlers = require('./cloak/client-handlers')(cloak)
-  , roomEventHandlers = require('./cloak/room-handlers')(cloak)
-  , lobbyEventHandlers = require('./cloak/lobby-handlers')(cloak);
+var clientHandlers = require('./cloak/client-handlers')(cloak)
+  , roomHandlers = require('./cloak/room-handlers')(cloak)
+  , lobbyHandlers = require('./cloak/lobby-handlers')(cloak);
 
 /**
 Configure our cloak game server.
@@ -22,10 +19,10 @@ layer as much as possible.
 cloak.configure({
   port: 1337,
   minRoomMembers: 0,
-  autoJoinLobby: true,
-  messages: clientMessageHandlers,
-  lobby: lobbyEventHandlers,
-  room: roomEventHandlers
+  autoJoinLobby: false,
+  messages: clientHandlers,
+  lobby: lobbyHandlers,
+  room: roomHandlers
 });
 cloak.run();
 
@@ -36,21 +33,10 @@ setInterval(function () {
 }, 1000);
 
 //Create rooms!  A DSL or smarter constructor might be nice?
-var additionRoom = cloak.createRoom("addition")
-  , additionGame = new MathGame({room: additionRoom});
-additionRoom.game = additionGame;
-
-var subtractionRoom = cloak.createRoom("subtraction")
-  , subtractionGame = new MathGame({room: subtractionRoom});
-subtractionRoom.game = subtractionGame;
-
-var multiplicationRoom = cloak.createRoom("multiplication")
-  , multiplicationGame = new MathGame({room: multiplicationRoom});
-multiplicationRoom.game = multiplicationGame;
-
-var divisionRoom = cloak.createRoom("division")
-  , divisionGame = new MathGame({room: divisionRoom});
-divisionRoom.game = divisionGame;
+cloak.createRoom("addition");
+cloak.createRoom("subtraction");
+cloak.createRoom("multiplication");
+cloak.createRoom("division");
 
 //static file server for our client application
 var server = http.createServer(
