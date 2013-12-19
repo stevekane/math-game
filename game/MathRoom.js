@@ -1,6 +1,6 @@
 var inherits = require('util').inherits
   ,  _ = require('lodash')
-  , Room = require('roomba-server').Room
+  , RoomMixin = require('roomba-server').RoomMixin
   , slice = Function.prototype.call.bind(Array.prototype.slice);
 
 //THIS IS A STUB FOR A FUTURE SYSTEM
@@ -16,7 +16,6 @@ var generateProblem = function (operator) {
   };
 };
 
-//used in array.map.  
 var calculatePoints = function (sub, index, array) {
   return {
     user: sub.user,
@@ -26,12 +25,6 @@ var calculatePoints = function (sub, index, array) {
 
 var calculatePointTotals = function (answer, submissions) {
   return _.chain(submissions)
-    .map(function (sub) {
-      return {
-        answer: Number(sub.answer),
-        user: sub.user
-      }; 
-    })
     .filter({answer: answer})
     .uniq("user")
     .map(calculatePoints)
@@ -43,7 +36,7 @@ var updatePoints = function (pointTotal) {
 };
 
 var MathRoom = function (name, operator) {
-  Room.call(this, name); 
+  RoomMixin.call(this, name); 
 
   this.operator = operator || "+";
 
@@ -57,7 +50,7 @@ var MathRoom = function (name, operator) {
 
   this.submission = [];
 
-  this.states = ["collecting", "displaying"]
+  this.states = ["collecting", "displaying"];
   this.activeState = null;
 
   this.startTime = null;
@@ -67,7 +60,7 @@ var MathRoom = function (name, operator) {
   this._interval = null;
 };
 
-inherits(MathRoom, Room);
+inherits(MathRoom, RoomMixin);
 
 MathRoom.prototype.start = function () {
   var now = Date.now();
@@ -92,6 +85,7 @@ MathRoom.prototype.stop = function () {
 
 MathRoom.prototype.storeSubmission = function (submission) {
   var numericalAnswer = Number(submission.answer);
+
   if (!isNan(numericalAnswer) && this.activeState === "collecting") {
     submission.answer = numericalAnswer;
     this.submissions.push(submisison);
@@ -107,7 +101,6 @@ function collectingTick (game) {
     pointTotals = calculatePointTotals(game._answer, game.submissions); 
     _.forEach(pointTotals, updatePoints);  
     game.answer = game._answer;
-    console.log(game.serializeGameState());
     game.activeState = "displaying";
     game.nextSwitch = now + game.displayingDuration;
   }     
@@ -128,22 +121,20 @@ function displayingTick (game) {
   }
 };
 
-MathRoom.prototype.serializeGameState = function () {
+MathRoom.prototype.serializeState = function () {
   return {
     question: this.question,
     answer: this.answer,
-    users: _.invoke(this.users, "toJSON")
+    users: _.invoke(this.getUsers(), "serializeState")
   };
 };
 
 MathRoom.prototype.tick = function () {
-  var gameState = this.serializeGameState();
+  var gameState = this.serializeState();
 
   if (this.activeState === "collecting") collectingTick(this);
   else if (this.activeState === "displaying") displayingTick(this);
-  _.forEach(this.getUsers(), function (user) {
-    user.socket.emit('tick', gameState);
-  });
+  _.invoke(_.pluck(this.getUsers(), "socket"), "emit", "tick", gameState);
 };
 
 module.exports = MathRoom;

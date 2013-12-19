@@ -25,7 +25,7 @@
     "lodash": "~2.4.1",
     "power-throw": "0.0.1",
     "tiny-clock": "0.0.1",
-    "roomba-server": "0.0.2",
+    "roomba-server": "0.0.6",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "node-stopwatch": "0.0.1"

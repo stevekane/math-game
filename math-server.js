@@ -4,21 +4,24 @@ var http = require('http')
   , roomba = require('roomba-server')
   , socketIO = require('socket.io')
   , MathRoom = require('./game/MathRoom')
-
-//our Player class
-var MathWizard = roomba.UserMixin;
+  , MathLobby = require('./game/MathLobby')
+  , MathWizard = require('./game/MathWizard')
 
 var server = socketIO.listen(8080)
-  , lobby = new roomba.Room("Lobby")
+  , lobby = new MathLobby("Lobby")
   , roomManager = new roomba.RoomManager(server, lobby)
-  , additionRoom = new MathRoom("addition", "+").start()
-  , subtractionRoom = new MathRoom("subtraction", "-").start()
+  , additionRoom = new MathRoom("addition", "+")
+  , subtractionRoom = new MathRoom("subtraction", "-")
 
 server.set('log level', 1);
 
 roomManager
   .addRoom(additionRoom)
   .addRoom(subtractionRoom)
+
+lobby.start();
+additionRoom.start();
+subtractionRoom.start();
 
 //SOCKET HANDLERS
 var handleBegin = function (socket, roomManager) {
@@ -27,9 +30,7 @@ var handleBegin = function (socket, roomManager) {
       , user = new MathWizard(socket, data.name || "MathWizard");
 
     roomManager.socketToUserMap[socket.id] = user;  
-    //FIXME: JUST DID THIS FOR TESTING.  SHOULD ADD TO LOBBY BY DEFAULT
-    roomManager.getRoomByName("addition").addUser(user);
-    //roomManager.getLobby().addUser(user);
+    roomManager.getLobby().addUser(user);
     socket.emit("beginConfirm", user.toJSON());
   };
 };
