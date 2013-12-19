@@ -1,46 +1,20 @@
-var Game = require('./game/MathClient')
-  , cloak = require('cloak-browserify')
-  , NavBar = require('./navbar.jsx')
-  , components = require('./components.jsx')
-  , navDiv = document.getElementById('nav')
-  , contentDiv = document.getElementById('content');
+var io= require('socket.io-client')
+  , socket = io.connect("ws://localhost:8080");
 
-var game = new Game;
+var handleConnect = function () {
+  console.log("connection established");  
+  socket.emit("begin", {name: "Steve"});
+};
 
-//inject ref to cloak onto the game
-game.cloak = cloak;
+var handleBeginConfirm = function (data) {
+  console.log("You are logged in as ", data); 
+};
 
-var gui = React.renderComponent(components.GameComponent({
-  game: game,
-  rooms: []
-}), contentDiv);
+var handleTick = function (data) {
+  console.log(data);
+};
 
-var nav = React.renderComponent(NavBar({
-  
-}), navDiv);
-
-game.on('transition', function (name) {
-  gui.setState({
-    activeState: name   
-  });
-});
-
-game.on('rooms', function (rooms) {
-  gui.setProps({
-    rooms: rooms 
-  });
-});
-
-//register all our socket events with a ref to game
-var serverEvents = require('./events/server')(game)
-  , customEvents = require('./events/custom')(game)
-  , timerEvents = require('./events/timer')(game);
-
-cloak.configure({
-  messages: customEvents,
-  serverEvents: serverEvents,
-  timerEvents: timerEvents
-});
-
-cloak.port = "http://localhost:1337",
-cloak.run(cloak.port);
+socket
+  .on("connect", handleConnect)
+  .on("beginConfirm", handleBeginConfirm)
+  .on("tick", handleTick);

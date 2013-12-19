@@ -1,48 +1,58 @@
 var http = require('http')
+  , inherits = require('util').inherits
   , ecstatic = require('ecstatic')
-  , cloak = require('cloak');
+  , roomba = require('roomba-server')
+  , socketIO = require('socket.io')
+  , MathRoom = require('./game/MathRoom')
 
-//custom and room socket event handlers, pass a reference to cloak
-var clientHandlers = require('./cloak/client-handlers')(cloak)
-  , roomHandlers = require('./cloak/room-handlers')(cloak)
-  , lobbyHandlers = require('./cloak/lobby-handlers')(cloak);
+//our Player class
+var MathWizard = roomba.UserMixin;
 
-/**
-Configure our cloak game server.
-messages define how the server responds to messages
-sent over websocket connections.  These are going to
-be simple, thin delegations into our game system.
+var server = socketIO.listen(8080)
+  , lobby = new roomba.Room("Lobby")
+  , roomManager = new roomba.RoomManager(server, lobby)
+  , additionRoom = new MathRoom("addition", "+").start()
+  , subtractionRoom = new MathRoom("subtraction", "-").start()
 
-The game mechanics should be insulated from the network
-layer as much as possible.
-*/
-cloak.configure({
-  port: 1337,
-  minRoomMembers: 0,
-  autoJoinLobby: false,
-  messages: clientHandlers,
-  lobby: lobbyHandlers,
-  room: roomHandlers
+server.set('log level', 1);
+
+roomManager
+  .addRoom(additionRoom)
+  .addRoom(subtractionRoom)
+
+//SOCKET HANDLERS
+var handleBegin = function (socket, roomManager) {
+  return function (data) {
+    var id = data.id
+      , user = new MathWizard(socket, data.name || "MathWizard");
+
+    roomManager.socketToUserMap[socket.id] = user;  
+    //FIXME: JUST DID THIS FOR TESTING.  SHOULD ADD TO LOBBY BY DEFAULT
+    roomManager.getRoomByName("addition").addUser(user);
+    //roomManager.getLobby().addUser(user);
+    socket.emit("beginConfirm", user.toJSON());
+  };
+};
+
+var handleDisconnect = function (socket, roomManager) {
+  return function () {
+    var user = roomManager.socketToUserMap[socket.id];
+
+    if (user) {
+      user.room.removeUser(user);
+      delete roomManager.socketToUserMap[socket.id];
+    }
+  }     
+};
+
+server.sockets.on("connection", function (socket) {
+  socket 
+    .on("begin", handleBegin(socket, roomManager))
+    .on("disconnect", handleDisconnect(socket, roomManager))
 });
-cloak.run();
 
-//HACK BECAUSE LOBBY PULSE ISNT WORKING...
-var lobby = cloak.getLobby();
-setInterval(function () {
-  lobby._emitEvent("pulse", lobby);
-}, 1000);
 
-//Create rooms!  A DSL or smarter constructor might be nice?
-cloak.createRoom("addition");
-cloak.createRoom("subtraction");
-cloak.createRoom("multiplication");
-cloak.createRoom("division");
-
-//static file server for our client application
-var server = http.createServer(
-  ecstatic({root: __dirname + "/public"})
-);
-
-server.listen(1234, function () {
-  console.log("http listening on 1234");
+http.createServer(ecstatic({root: __dirname + "/public"}))
+.listen(1234, function () {
+  console.log('static file server started on 1234');
 });
