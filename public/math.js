@@ -3934,7 +3934,8 @@ window.socket = socket;
 var gui = React.renderComponent(Router({
   room: room,
   lobby: lobby,
-  user: user
+  user: user,
+  socket: socket
 }), document.body);
 
 },{"./components/Router.jsx":8,"socket.io-client":1}],3:[function(require,module,exports){
@@ -3984,7 +3985,7 @@ module.exports = AnswerInput;
 /** @jsx React.DOM */var Lobby = React.createClass({displayName: 'Lobby',
   
   selectRoom: function (room) {
-    this.props.game.cloak.message("join", room.name);
+    this.props.socket.emit("join", room.name);
   },
   
   render: function () {
@@ -4114,7 +4115,9 @@ var RouterComponent = React.createClass({displayName: 'RouterComponent',
       NavBar( {user:this.props.user} ),
       React.DOM.div( {className:"row"}, 
         React.DOM.div( {className:"col-md-8 col-md-offset-2"}, 
-          Lobby( {rooms:this.props.lobby.rooms} ),
+          Lobby(
+            {rooms:this.props.lobby.rooms,
+            socket:this.props.socket} ),
           renderState(this.state.activeState, this.props)
         )
       )

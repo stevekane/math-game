@@ -1,7 +1,7 @@
 var Lobby = React.createClass({
   
   selectRoom: function (room) {
-    this.props.game.cloak.message("join", room.name);
+    this.props.socket.emit("join", room.name);
   },
   
   render: function () {

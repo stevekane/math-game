@@ -59,5 +59,6 @@ window.socket = socket;
 var gui = React.renderComponent(Router({
   room: room,
   lobby: lobby,
-  user: user
+  user: user,
+  socket: socket
 }), document.body);
