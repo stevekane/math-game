@@ -1,19 +1,15 @@
 var http = require('http')
-  , inherits = require('util').inherits
   , ecstatic = require('ecstatic')
   , roomba = require('roomba-server')
   , socketIO = require('socket.io')
   , MathRoom = require('./game/MathRoom')
   , MathLobby = require('./game/MathLobby')
   , MathWizard = require('./game/MathWizard')
-
-var server = socketIO.listen(8080)
-  , lobby = new MathLobby("Lobby")
+  , server = socketIO.listen(8080).set('log level', 1)
+  , lobby = new MathLobby("lobby")
   , roomManager = new roomba.RoomManager(server, lobby)
   , additionRoom = new MathRoom("addition", "+")
-  , subtractionRoom = new MathRoom("subtraction", "-")
-
-server.set('log level', 1);
+  , subtractionRoom = new MathRoom("subtraction", "-");
 
 roomManager
   .addRoom(additionRoom)
@@ -31,7 +27,7 @@ var handleBegin = function (socket, roomManager) {
 
     roomManager.socketToUserMap[socket.id] = user;  
     roomManager.getLobby().addUser(user);
-    socket.emit("beginConfirm", user.toJSON());
+    socket.emit("begin-confirm", user.serializeState());
   };
 };
 
@@ -46,14 +42,36 @@ var handleDisconnect = function (socket, roomManager) {
   }     
 };
 
+var handleSubmission = function (socket, roomManager) {
+  return function (answer) {
+    var user = roomManager.socketToUserMap[socket.id]; 
+
+    user.room.storeSubmission({
+      answer: Number(answer),
+      user: user
+    });
+  };
+};
+
+var handleJoin = function (socket, roomManager) {
+  return function (roomName) {
+    var user = roomManager.socketToUserMap[socket.id]
+      , targetRoom = roomManager.getRoomByName(roomName);
+
+    if (user.room) user.room.removeUser(user);
+    if (targetRoom) targetRoom.addUser(user); 
+    else roomManager.getLobby().addUser(user);
+    socket.emit("join-confirm", user.room.name);
+  };
+};
+
 server.sockets.on("connection", function (socket) {
   socket 
     .on("begin", handleBegin(socket, roomManager))
     .on("disconnect", handleDisconnect(socket, roomManager))
+    .on("submission", handleSubmission(socket, roomManager))
+    .on("join", handleJoin(socket, roomManager))
 });
-
 
 http.createServer(ecstatic({root: __dirname + "/public"}))
-.listen(1234, function () {
-  console.log('static file server started on 1234');
-});
+.listen(1234, console.log.bind(console, "server on 1234"));

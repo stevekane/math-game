@@ -1,20 +1,8 @@
 var inherits = require('util').inherits
   ,  _ = require('lodash')
+  , generateProblem = require('math-gen')  
   , RoomMixin = require('roomba-server').RoomMixin
   , slice = Function.prototype.call.bind(Array.prototype.slice);
-
-//THIS IS A STUB FOR A FUTURE SYSTEM
-var generateProblem = function (operator) {
-  var first = Math.floor(Math.random() * 100)
-    , second = Math.floor(Math.random() * 100)
-    , question = String(first) + String(operator) + String(second)
-    , answer = eval(question);
-
-  return {
-    question: question,
-    answer: answer
-  };
-};
 
 var calculatePoints = function (sub, index, array) {
   return {
@@ -48,7 +36,7 @@ var MathRoom = function (name, operator) {
   this.collectingDuration = 7000;
   this.displayingDuration = 4000;
 
-  this.submission = [];
+  this.submissions = [];
 
   this.states = ["collecting", "displaying"];
   this.activeState = null;
@@ -86,11 +74,20 @@ MathRoom.prototype.stop = function () {
 MathRoom.prototype.storeSubmission = function (submission) {
   var numericalAnswer = Number(submission.answer);
 
-  if (!isNan(numericalAnswer) && this.activeState === "collecting") {
+  if (this.activeState === "collecting") {
     submission.answer = numericalAnswer;
-    this.submissions.push(submisison);
+    this.submissions.push(submission);
   }
   return this;
+};
+
+MathRoom.prototype.serializeState = function () {
+  return {
+    name: this.name,
+    question: this.question,
+    answer: this.answer,
+    users: _.invoke(this.getUsers(), "serializeState")
+  };
 };
 
 function collectingTick (game) {
@@ -111,7 +108,7 @@ function displayingTick (game) {
     , problem;
 
   if (now > game.nextSwitch) {
-    problem = generateProblem(game.operator);
+    problem = generateProblem(game.operator, 3, 12);
     game.question = problem.question;
     game._answer = problem.answer;
     game.answer = "";
@@ -121,20 +118,13 @@ function displayingTick (game) {
   }
 };
 
-MathRoom.prototype.serializeState = function () {
-  return {
-    question: this.question,
-    answer: this.answer,
-    users: _.invoke(this.getUsers(), "serializeState")
-  };
-};
-
 MathRoom.prototype.tick = function () {
-  var gameState = this.serializeState();
+  var roomState = this.serializeState()
+    , sockets = _.pluck(this.getUsers(), "socket");
 
   if (this.activeState === "collecting") collectingTick(this);
   else if (this.activeState === "displaying") displayingTick(this);
-  _.invoke(_.pluck(this.getUsers(), "socket"), "emit", "tick", gameState);
+  _.invoke(sockets, "emit", "tick-room", roomState);
 };
 
 module.exports = MathRoom;

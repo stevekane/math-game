@@ -28,7 +28,8 @@
     "roomba-server": "0.0.6",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
-    "node-stopwatch": "0.0.1"
+    "node-stopwatch": "0.0.1",
+    "math-gen": "0.0.1"
   },
   "devDependencies": {
     "tape": "~2.3.0",

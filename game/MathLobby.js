@@ -2,7 +2,6 @@ var inherits = require('util').inherits
   , _ = require('lodash')
   , RoomMixin = require('roomba-server').RoomMixin
 
-
 var MathLobby = function (name) {
   RoomMixin.call(this, name);
 
@@ -40,9 +39,12 @@ MathLobby.prototype.serializeState = function () {
 };
 
 MathLobby.prototype.tick = function () {
-  var lobbyState = this.serializeState();
+  var lobbyState = this.serializeState()
+    , lobbyUsers = this.getUsers()
+    , roomUsers = _.flatten(_.invoke(this.roomManager.getRooms(), "getUsers"));
 
-  _.invoke(this.getUsers(), "message", "tick", lobbyState);
+  _.invoke(roomUsers, "message", "tick-lobby", lobbyState);
+  _.invoke(lobbyUsers, "message", "tick-lobby", lobbyState);
 };
 
 module.exports = MathLobby;
