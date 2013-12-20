@@ -1,8 +1,6 @@
 var AnswerInput = React.createClass({
   getInitialState: function () {
-    return {
-      value: "",
-    }; 
+    return {value: ""}; 
   },
 
   keyDown: function (e) {
@@ -17,9 +15,7 @@ var AnswerInput = React.createClass({
 
   submit: function (value) {
     this.props.socket.emit('submission', value);
-    this.setState({
-      value: ""
-    });
+    this.setState({value: ""});
   },
 
   handleChange: function (e) {

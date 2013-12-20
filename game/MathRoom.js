@@ -20,7 +20,7 @@ var calculatePointTotals = function (answer, submissions) {
 };
 
 var updatePoints = function (pointTotal) {
-  pointTotal.user.points += pointTotal.score;
+  pointTotal.user.score += pointTotal.score;
 };
 
 var MathRoom = function (name, operator) {
@@ -96,6 +96,7 @@ function collectingTick (game) {
 
   if (now > game.nextSwitch) {
     pointTotals = calculatePointTotals(game._answer, game.submissions); 
+    console.log(pointTotals);
     _.forEach(pointTotals, updatePoints);  
     game.answer = game._answer;
     game.activeState = "displaying";

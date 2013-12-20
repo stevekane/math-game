@@ -3941,9 +3941,7 @@ var gui = React.renderComponent(Router({
 },{"./components/Router.jsx":8,"socket.io-client":1}],3:[function(require,module,exports){
 /** @jsx React.DOM */var AnswerInput = React.createClass({displayName: 'AnswerInput',
   getInitialState: function () {
-    return {
-      value: "",
-    }; 
+    return {value: ""}; 
   },
 
   keyDown: function (e) {
@@ -3958,9 +3956,7 @@ var gui = React.renderComponent(Router({
 
   submit: function (value) {
     this.props.socket.emit('submission', value);
-    this.setState({
-      value: ""
-    });
+    this.setState({value: ""});
   },
 
   handleChange: function (e) {
