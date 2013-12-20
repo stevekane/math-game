@@ -1,6 +1,6 @@
 var io= require('socket.io-client')
   , socket = io.connect("ws://localhost:8080")
-  , RouterComponent = require('./components/components.jsx').RouterComponent;
+  , Router = require('./components/Router.jsx');
 
 var lobby = {
   rooms: []  
@@ -28,9 +28,9 @@ var handleBeginConfirm = function (user) {
 var handleJoinConfirm = function (roomName) {
   var targetState = roomName === "lobby" ? "lobby" : "room";
 
-  console.log(targetState, roomName);
   //TODO: should probably check if the target state is valid 
-
+  //ON STATE CHANGE SHOULD PROBABLY DO WORK INTERNALLY.  JUST
+  //SEND THE ROOMNAME
   gui.setState({
     activeState: targetState,
     roomName: roomName
@@ -56,7 +56,7 @@ socket
 //TODO: REMOVE.  JUST FOR TESTING
 window.socket = socket;
 
-var gui = React.renderComponent(RouterComponent({
+var gui = React.renderComponent(Router({
   room: room,
   lobby: lobby,
   user: user
