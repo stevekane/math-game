@@ -16,7 +16,7 @@ var AnswerInput = React.createClass({
   },
 
   submit: function (value) {
-    this.props.cloak.message('answer', value);
+    this.props.socket.emit('submission', value);
     this.setState({
       value: ""
     });

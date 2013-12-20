@@ -3957,7 +3957,7 @@ var gui = React.renderComponent(Router({
   },
 
   submit: function (value) {
-    this.props.cloak.message('answer', value);
+    this.props.socket.emit('submission', value);
     this.setState({
       value: ""
     });
@@ -4073,7 +4073,7 @@ var Room = React.createClass({displayName: 'Room',
       React.DOM.section( {className:"col-md-9"}, 
         React.DOM.h1(null, "Question: ", this.props.question),
         React.DOM.h2(null, "Answer: ", this.props.answer),
-        AnswerInput( {cloak:this.props.cloak} )
+        AnswerInput( {socket:this.props.socket} )
       ),
 
       React.DOM.aside( {className:"col-md-3"}, 
@@ -4092,12 +4092,17 @@ module.exports = Room;
   , Lobby = require('./Lobby.jsx');
 
 var renderState = function (stateName, props) {
-  var state
-    , room = props.room;
-
-  return stateName === "room"
-    ? Room( {players:room.users, question:room.question, answer:room.answer} )
-    : React.DOM.h1(null, "Join a game to play!");
+  if (stateName === "room") {
+    return (
+    Room(
+      {players:props.room.users,
+      question:props.room.question,
+      answer:props.room.answer, 
+      socket:props.socket} )
+    ); 
+  } else {
+    return React.DOM.h1(null, "Join a game to play!");
+  }
 };
 
 var RouterComponent = React.createClass({displayName: 'RouterComponent',

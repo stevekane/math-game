@@ -8,7 +8,7 @@ var Room = React.createClass({
       <section className="col-md-9">
         <h1>Question: {this.props.question}</h1>
         <h2>Answer: {this.props.answer}</h2>
-        <AnswerInput cloak={this.props.cloak} />
+        <AnswerInput socket={this.props.socket} />
       </section>
 
       <aside className="col-md-3">

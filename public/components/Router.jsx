@@ -3,12 +3,17 @@ var NavBar = require('./NavBar.jsx')
   , Lobby = require('./Lobby.jsx');
 
 var renderState = function (stateName, props) {
-  var state
-    , room = props.room;
-
-  return stateName === "room"
-    ? <Room players={room.users} question={room.question} answer={room.answer} />
-    : <h1>Join a game to play!</h1>;
+  if (stateName === "room") {
+    return (
+    <Room
+      players={props.room.users}
+      question={props.room.question}
+      answer={props.room.answer} 
+      socket={props.socket} />
+    ); 
+  } else {
+    return <h1>Join a game to play!</h1>;
+  }
 };
 
 var RouterComponent = React.createClass({
