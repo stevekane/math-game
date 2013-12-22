@@ -58,11 +58,19 @@ var handleJoin = _.curry(function (socket, roomManager, roomName) {
   socket.emit("join-confirm", user.room.name);
 });
 
+var handleNameChange = _.curry(function (socket, roomManager, name) {
+  var user = roomManager.socketToUserMap[socket.id];
+
+  user.name = name;
+  socket.emit("name-change-confirm", user.serializeState());
+});
+
 server.sockets.on("connection", function (socket) {
   socket 
     .on("begin", handleBegin(socket, roomManager))
     .on("disconnect", handleDisconnect(socket, roomManager))
     .on("submission", handleSubmission(socket, roomManager))
+    .on("name-change", handleNameChange(socket, roomManager))
     .on("join", handleJoin(socket, roomManager))
 });
 

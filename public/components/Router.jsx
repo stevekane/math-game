@@ -29,7 +29,9 @@ var RouterComponent = React.createClass({
   render: function () {
     return (
     <div>
-      <NavBar user={this.props.user} />
+      <NavBar
+        user={this.props.user} 
+        socket={this.props.socket} />
       <div className="row">
         <div className="col-md-8 col-md-offset-2">
           <Lobby

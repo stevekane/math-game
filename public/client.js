@@ -18,7 +18,7 @@ var room = {
 
 var handleConnect = function () {
   console.log("connection established");  
-  socket.emit("begin", {name: "Steve"});
+  socket.emit("begin", {name: "MathWizard"});
 };
 
 var handleBeginConfirm = function (user) {
@@ -34,6 +34,10 @@ var handleJoinConfirm = function (roomName) {
   });
 };
 
+var handleNameChangeConfirm = function (user) {
+  gui.setProps({user: user});
+};
+
 var updateLobby = function (lobby) {
   gui.setProps({lobby: lobby});
 };
@@ -46,6 +50,7 @@ socket
   .on("connect", handleConnect)
   .on("begin-confirm", handleBeginConfirm)
   .on("join-confirm", handleJoinConfirm)
+  .on("name-change-confirm", handleNameChangeConfirm)
   //IMPLEMENT .on("submit-confirm", handleSubmitConfirm)
   .on("tick-lobby", updateLobby)
   .on("tick-room", updateRoom);

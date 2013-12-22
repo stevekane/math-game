@@ -3893,7 +3893,7 @@ var room = {
 
 var handleConnect = function () {
   console.log("connection established");  
-  socket.emit("begin", {name: "Steve"});
+  socket.emit("begin", {name: "MathWizard"});
 };
 
 var handleBeginConfirm = function (user) {
@@ -3909,6 +3909,10 @@ var handleJoinConfirm = function (roomName) {
   });
 };
 
+var handleNameChangeConfirm = function (user) {
+  gui.setProps({user: user});
+};
+
 var updateLobby = function (lobby) {
   gui.setProps({lobby: lobby});
 };
@@ -3921,6 +3925,7 @@ socket
   .on("connect", handleConnect)
   .on("begin-confirm", handleBeginConfirm)
   .on("join-confirm", handleJoinConfirm)
+  .on("name-change-confirm", handleNameChangeConfirm)
   //IMPLEMENT .on("submit-confirm", handleSubmitConfirm)
   .on("tick-lobby", updateLobby)
   .on("tick-room", updateRoom);
@@ -4016,16 +4021,96 @@ var Lobby = React.createClass({displayName: 'Lobby',
 module.exports = Lobby;
 
 },{}],5:[function(require,module,exports){
-/** @jsx React.DOM */var NavBar = React.createClass({displayName: 'NavBar',
+/** @jsx React.DOM */var renderState = function (component, isEditing) {
+  var html;
+
+  if (isEditing) {
+    html =  (
+    React.DOM.form( {className:"navbar-form navbar-left"}, 
+      React.DOM.div( {className:"form-group"}, 
+        React.DOM.input(
+          {type:"text",
+          autoFocus:true,
+          className:"form-control", 
+          value:component.state.value, 
+          onChange:component.handleChange,
+          onKeyDown:component.keyDown} )
+      ) 
+    ) 
+    ); 
+  } else {
+    html = (
+    React.DOM.div(null, 
+      React.DOM.p( {className:"navbar-text"}, 
+        " Welcome to hell, " ,
+        React.DOM.span( {className:"text-info"}, 
+          component.props.user.name
+        )
+      ),
+      React.DOM.button(
+        {className:"btn btn-default navbar-btn",
+        onClick:component.startEditing.bind(component)}, 
+        " change name "
+      )
+    )
+    );
+  }
+
+  return html;
+};
+
+var NavBar = React.createClass({displayName: 'NavBar',
+  getInitialState: function () {
+    return {
+      isEditing: false,
+      newName: ""
+    }; 
+  },
+
+  startEditing: function () {
+    this.setState({isEditing: true});
+  },
+
+  stopEditing: function () {
+    this.setState({isEditing: false}); 
+  },
+
+  submit: function (value) {
+    this.props.socket.emit("name-change", value);
+  },
+
+  keyDown: function (e) {
+    switch (e.keyCode) {
+      case 13:
+        this.submit(this.state.value);
+        this.stopEditing();
+        e.preventDefault(); 
+        e.stopPropagation();
+        return false;
+        break;
+      case 27:
+        this.stopEditing();
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+        break;
+      default:
+        return true;
+    }
+  },
+
+  handleChange: function (e) {
+    this.setState({value: e.target.value}); 
+  },
+
   render: function () {
+
     return (
     React.DOM.nav( {className:"navbar navbar-inverse navbar-static-top"}, 
       React.DOM.div( {className:"navbar-header"}, 
-        React.DOM.a( {className:"navbar-brand", href:"#"}, "So Math, Wow."),
-        React.DOM.p( {className:"navbar-text"}, 
-          " Welcome to hell, ", this.props.user.name
-        )
-      )
+        React.DOM.a( {className:"navbar-brand", href:"#"}, "So Math, Wow.")
+      ),
+      renderState(this, this.state.isEditing)
     ) 
     ); 
   },
@@ -4128,7 +4213,9 @@ var RouterComponent = React.createClass({displayName: 'RouterComponent',
   render: function () {
     return (
     React.DOM.div(null, 
-      NavBar( {user:this.props.user} ),
+      NavBar(
+        {user:this.props.user, 
+        socket:this.props.socket} ),
       React.DOM.div( {className:"row"}, 
         React.DOM.div( {className:"col-md-8 col-md-offset-2"}, 
           Lobby(
