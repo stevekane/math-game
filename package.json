@@ -4,7 +4,8 @@
   "description": "Multiplayer math flash card game",
   "main": "math-server.js",
   "scripts": {
-    "test": "node tests/All-tests.js"
+    "test": "node tests/All-tests.js",
+    "start": "node math-server.js"
   },
   "repository": {
     "type": "git",

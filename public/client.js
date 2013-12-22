@@ -1,6 +1,7 @@
 var io= require('socket.io-client')
   , Router = require('./components/Router.jsx')
-  , socket = io.connect("ws://localhost:8080");
+  , path = "ws://" + window.location.hostname + ":8080"
+  , socket = io.connect(path);
 
 var lobby = {
   rooms: []  
