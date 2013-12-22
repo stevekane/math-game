@@ -2,6 +2,7 @@ var http = require('http')
   , ecstatic = require('ecstatic')
   , roomba = require('roomba-server')
   , socketIO = require('socket.io')
+  , _ = require('lodash')
   , MathRoom = require('./game/MathRoom')
   , MathLobby = require('./game/MathLobby')
   , MathWizard = require('./game/MathWizard')
@@ -20,50 +21,42 @@ additionRoom.start();
 subtractionRoom.start();
 
 //SOCKET HANDLERS
-var handleBegin = function (socket, roomManager) {
-  return function (data) {
-    var id = data.id
-      , user = new MathWizard(socket, data.name || "MathWizard");
+var handleBegin = _.curry(function (socket, roomManager, data) {
+  var id = data.id
+    , user = new MathWizard(socket, data.name || "MathWizard");
 
-    roomManager.socketToUserMap[socket.id] = user;  
-    roomManager.getLobby().addUser(user);
-    socket.emit("begin-confirm", user.serializeState());
-  };
-};
+  roomManager.socketToUserMap[socket.id] = user;  
+  roomManager.getLobby().addUser(user);
+  socket.emit("begin-confirm", user.serializeState());
+});
 
-var handleDisconnect = function (socket, roomManager) {
-  return function () {
-    var user = roomManager.socketToUserMap[socket.id];
+var handleDisconnect = _.curry(function (socket, roomManager, data) {
+  var user = roomManager.socketToUserMap[socket.id];
 
-    if (user) {
-      user.room.removeUser(user);
-      delete roomManager.socketToUserMap[socket.id];
-    }
-  }     
-};
+  if (user) {
+    user.room.removeUser(user);
+    delete roomManager.socketToUserMap[socket.id];
+  }
+});
 
-var handleSubmission = function (socket, roomManager) {
-  return function (answer) {
-    var user = roomManager.socketToUserMap[socket.id]; 
+var handleSubmission = _.curry(function (socket, roomManager, answer) {
+  var user = roomManager.socketToUserMap[socket.id]; 
 
-    user.room.storeSubmission({
-      answer: Number(answer),
-      user: user
-    });
-  };
-};
+  user.room.storeSubmission({
+    answer: Number(answer),
+    user: user
+  });
+});
 
-var handleJoin = function (socket, roomManager) {
-  return function (roomName) {
-    var user = roomManager.socketToUserMap[socket.id]
-      , targetRoom = roomManager.getRoomByName(roomName);
+var handleJoin = _.curry(function (socket, roomManager, roomName) {
+  var user = roomManager.socketToUserMap[socket.id]
+    , targetRoom = roomManager.getRoomByName(roomName);
 
-    if (user.room) user.room.removeUser(user);
-    if (targetRoom) targetRoom.addUser(user); 
-    else roomManager.getLobby().addUser(user);
-    socket.emit("join-confirm", user.room.name);
-  };
-};
+  if (user.room) user.room.removeUser(user);
+  if (targetRoom) targetRoom.addUser(user); 
+  else roomManager.getLobby().addUser(user);
+  socket.emit("join-confirm", user.room.name);
+});
 
 server.sockets.on("connection", function (socket) {
   socket 
