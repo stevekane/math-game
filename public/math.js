@@ -3972,10 +3972,20 @@ var gui = React.renderComponent(Router({
 module.exports = AnswerInput;
 
 },{}],4:[function(require,module,exports){
-/** @jsx React.DOM */var highlightActive = function (name, activeName) {
-  return name === activeName 
-    ? "list-group-item active"
-    : "list-group-item";
+/** @jsx React.DOM */var roomSummary = function (context, room, roomName) {
+  var cx = React.addons.classSet
+  var classes = cx({
+    "list-group-item": true,
+    "active": room.name === roomName
+  });
+  return (
+  React.DOM.a(
+    {className:classes,
+    onClick:context.selectRoom.bind(context, room)}, 
+    React.DOM.span( {className:"badge"}, room.users.length),
+    room.name || "math"
+  )
+  );
 };
 
 var Lobby = React.createClass({displayName: 'Lobby',
@@ -3986,7 +3996,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
   
   render: function () {
     var rooms = this.props.rooms
-      , activeRoom = this.props.activeRoom
+      , roomName = this.props.roomName
       , self = this;
 
     return (
@@ -3994,14 +4004,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
       React.DOM.div( {className:"list-group"}, 
       
         rooms.map(function (room) {
-          return (
-          React.DOM.a(
-            {className:highlightActive(room.name, activeRoom),
-            onClick:self.selectRoom.bind(self, room)}, 
-            React.DOM.span( {className:"badge"}, room.users.length),
-            room.name || "math"
-          )
-          );
+          return roomSummary(self, room, roomName);
         })
       
       ) 
@@ -4031,15 +4034,15 @@ module.exports = Lobby;
 module.exports = NavBar;
 
 },{}],6:[function(require,module,exports){
-/** @jsx React.DOM */var highlightActive = function (id, activeId) {
-  return id === activeId 
-    ? "list-group-item active"
-    : "list-group-item";
-};
+/** @jsx React.DOM */var playerSummary = function (player, activePlayer) {
+  var cx = React.addons.classSet;
+  var classes = cx({
+    "list-group-item": true,
+    "active": player.id === activePlayer.id
+  });
 
-var playerSummary = function (player, activePlayer) {
   return (
-  React.DOM.a( {className:highlightActive(player.id, activePlayer.id)} , 
+  React.DOM.a( {className:classes} , 
     player.name,
     React.DOM.span( {className:"badge"}, player.score)
   )
@@ -4130,7 +4133,7 @@ var RouterComponent = React.createClass({displayName: 'RouterComponent',
         React.DOM.div( {className:"col-md-8 col-md-offset-2"}, 
           Lobby(
             {rooms:this.props.lobby.rooms,
-            activeRoom:this.state.roomName,
+            roomName:this.state.roomName,
             socket:this.props.socket} ),
           renderState(this.state.activeState, this.props)
         )

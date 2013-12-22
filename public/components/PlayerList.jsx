@@ -1,12 +1,12 @@
-var highlightActive = function (id, activeId) {
-  return id === activeId 
-    ? "list-group-item active"
-    : "list-group-item";
-};
-
 var playerSummary = function (player, activePlayer) {
+  var cx = React.addons.classSet;
+  var classes = cx({
+    "list-group-item": true,
+    "active": player.id === activePlayer.id
+  });
+
   return (
-  <a className={highlightActive(player.id, activePlayer.id)} >
+  <a className={classes} >
     {player.name}
     <span className="badge">{player.score}</span>
   </a>

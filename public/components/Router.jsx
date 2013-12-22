@@ -34,7 +34,7 @@ var RouterComponent = React.createClass({
         <div className="col-md-8 col-md-offset-2">
           <Lobby
             rooms={this.props.lobby.rooms}
-            activeRoom={this.state.roomName}
+            roomName={this.state.roomName}
             socket={this.props.socket} />
           {renderState(this.state.activeState, this.props)}
         </div>

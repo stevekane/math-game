@@ -1,7 +1,17 @@
-var highlightActive = function (name, activeName) {
-  return name === activeName 
-    ? "list-group-item active"
-    : "list-group-item";
+var roomSummary = function (context, room, roomName) {
+  var cx = React.addons.classSet
+  var classes = cx({
+    "list-group-item": true,
+    "active": room.name === roomName
+  });
+  return (
+  <a
+    className={classes}
+    onClick={context.selectRoom.bind(context, room)}>
+    <span className="badge">{room.users.length}</span>
+    {room.name || "math"}
+  </a>
+  );
 };
 
 var Lobby = React.createClass({
@@ -12,7 +22,7 @@ var Lobby = React.createClass({
   
   render: function () {
     var rooms = this.props.rooms
-      , activeRoom = this.props.activeRoom
+      , roomName = this.props.roomName
       , self = this;
 
     return (
@@ -20,14 +30,7 @@ var Lobby = React.createClass({
       <div className="list-group">
       {
         rooms.map(function (room) {
-          return (
-          <a
-            className={highlightActive(room.name, activeRoom)}
-            onClick={self.selectRoom.bind(self, room)}>
-            <span className="badge">{room.users.length}</span>
-            {room.name || "math"}
-          </a>
-          );
+          return roomSummary(self, room, roomName);
         })
       }
       </div> 
