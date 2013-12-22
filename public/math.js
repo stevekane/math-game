@@ -3874,8 +3874,8 @@ if (typeof define === "function" && define.amd) {
 })();
 },{}],2:[function(require,module,exports){
 var io= require('socket.io-client')
-  , socket = io.connect("ws://localhost:8080")
-  , Router = require('./components/Router.jsx');
+  , Router = require('./components/Router.jsx')
+  , socket = io.connect("ws://localhost:8080");
 
 var lobby = {
   rooms: []  
@@ -3903,9 +3903,6 @@ var handleBeginConfirm = function (user) {
 var handleJoinConfirm = function (roomName) {
   var targetState = roomName === "lobby" ? "lobby" : "room";
 
-  //TODO: should probably check if the target state is valid 
-  //ON STATE CHANGE SHOULD PROBABLY DO WORK INTERNALLY.  JUST
-  //SEND THE ROOMNAME
   gui.setState({
     activeState: targetState,
     roomName: roomName
@@ -3927,9 +3924,6 @@ socket
   //IMPLEMENT .on("submit-confirm", handleSubmitConfirm)
   .on("tick-lobby", updateLobby)
   .on("tick-room", updateRoom);
-
-//TODO: REMOVE.  JUST FOR TESTING
-window.socket = socket;
 
 var gui = React.renderComponent(Router({
   room: room,
@@ -3978,7 +3972,13 @@ var gui = React.renderComponent(Router({
 module.exports = AnswerInput;
 
 },{}],4:[function(require,module,exports){
-/** @jsx React.DOM */var Lobby = React.createClass({displayName: 'Lobby',
+/** @jsx React.DOM */var highlightActive = function (name, activeName) {
+  return name === activeName 
+    ? "list-group-item active"
+    : "list-group-item";
+};
+
+var Lobby = React.createClass({displayName: 'Lobby',
   
   selectRoom: function (room) {
     this.props.socket.emit("join", room.name);
@@ -3986,16 +3986,18 @@ module.exports = AnswerInput;
   
   render: function () {
     var rooms = this.props.rooms
+      , activeRoom = this.props.activeRoom
       , self = this;
 
     return (
     React.DOM.div( {className:"col-md-3"}, 
-      React.DOM.ul( {className:"list-group"}, 
+      React.DOM.div( {className:"list-group"}, 
       
         rooms.map(function (room) {
           return (
-          React.DOM.li( {className:"list-group-item",
-          onClick:self.selectRoom.bind(self, room)}, 
+          React.DOM.a(
+            {className:highlightActive(room.name, activeRoom),
+            onClick:self.selectRoom.bind(self, room)}, 
             React.DOM.span( {className:"badge"}, room.users.length),
             room.name || "math"
           )
@@ -4029,13 +4031,15 @@ module.exports = Lobby;
 module.exports = NavBar;
 
 },{}],6:[function(require,module,exports){
-/** @jsx React.DOM */var playerPlaceholder = function () {
-  return React.DOM.li( {className:"player list-group-item"}, "No players");
+/** @jsx React.DOM */var highlightActive = function (id, activeId) {
+  return id === activeId 
+    ? "list-group-item active"
+    : "list-group-item";
 };
 
-var playerSummary = function (player) {
+var playerSummary = function (player, activePlayer) {
   return (
-  React.DOM.li( {className:"player list-group-item"}, 
+  React.DOM.a( {className:highlightActive(player.id, activePlayer.id)} , 
     player.name,
     React.DOM.span( {className:"badge"}, player.score)
   )
@@ -4044,12 +4048,17 @@ var playerSummary = function (player) {
 
 var PlayerList = React.createClass({displayName: 'PlayerList',
   render: function () {
-    var players = this.props.players;
+    var players = this.props.players
+      , activePlayer = this.props.activePlayer;
 
     return (
     React.DOM.div(null, 
-      React.DOM.ul( {className:"player-list list-group"}, 
-        !players ? playerPlaceholder() : players.map(playerSummary)
+      React.DOM.div( {className:"player-list list-group"}, 
+        
+        players.map(function (player) {
+          return playerSummary(player, activePlayer); 
+        })
+        
       )
     )
     );
@@ -4073,7 +4082,9 @@ var Room = React.createClass({displayName: 'Room',
       ),
 
       React.DOM.aside( {className:"col-md-3"}, 
-        PlayerList( {players:this.props.players} )
+        PlayerList(
+          {players:this.props.players,
+          activePlayer:this.props.activePlayer} )
       )
     )
     ); 
@@ -4092,6 +4103,7 @@ var renderState = function (stateName, props) {
     return (
     Room(
       {players:props.room.users,
+      activePlayer:props.user,
       question:props.room.question,
       answer:props.room.answer, 
       socket:props.socket} )
@@ -4118,6 +4130,7 @@ var RouterComponent = React.createClass({displayName: 'RouterComponent',
         React.DOM.div( {className:"col-md-8 col-md-offset-2"}, 
           Lobby(
             {rooms:this.props.lobby.rooms,
+            activeRoom:this.state.roomName,
             socket:this.props.socket} ),
           renderState(this.state.activeState, this.props)
         )

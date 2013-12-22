@@ -12,7 +12,9 @@ var Room = React.createClass({
       </section>
 
       <aside className="col-md-3">
-        <PlayerList players={this.props.players} />
+        <PlayerList
+          players={this.props.players}
+          activePlayer={this.props.activePlayer} />
       </aside>
     </div>
     ); 
