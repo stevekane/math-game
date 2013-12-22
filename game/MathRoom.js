@@ -23,10 +23,12 @@ var updatePoints = function (pointTotal) {
   pointTotal.user.score += pointTotal.score;
 };
 
-var MathRoom = function (name, operator) {
+var MathRoom = function (name, operator, maxValue, termCount) {
   RoomMixin.call(this, name); 
 
   this.operator = operator || "+";
+  this.maxValue = maxValue || 12;
+  this.termCount = termCount || 2;
 
   this.question = "";
   this.answer = "";
@@ -109,7 +111,7 @@ function displayingTick (game) {
     , problem;
 
   if (now > game.nextSwitch) {
-    problem = generateProblem(game.operator, 3, 12);
+    problem = generateProblem(game.operator, game.termCount, game.maxValue);
     game.question = problem.question;
     game._answer = problem.answer;
     game.answer = "";

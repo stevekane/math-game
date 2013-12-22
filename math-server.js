@@ -9,16 +9,19 @@ var http = require('http')
   , server = socketIO.listen(8080).set('log level', 1)
   , lobby = new MathLobby("lobby")
   , roomManager = new roomba.RoomManager(server, lobby)
-  , additionRoom = new MathRoom("addition", "+")
-  , subtractionRoom = new MathRoom("subtraction", "-");
+  , additionRoom = new MathRoom("addition", "+", 12, 3)
+  , subtractionRoom = new MathRoom("subtraction", "-", 100, 2)
+  , multiplicationRoom = new MathRoom("multiplication", "*", 12, 2);
 
 roomManager
   .addRoom(additionRoom)
   .addRoom(subtractionRoom)
+  .addRoom(multiplicationRoom)
 
 lobby.start();
 additionRoom.start();
 subtractionRoom.start();
+multiplicationRoom.start();
 
 //SOCKET HANDLERS
 var handleBegin = _.curry(function (socket, roomManager, data) {
