@@ -1,6 +1,6 @@
 var io= require('socket.io-client')
   , Router = require('./components/Router.jsx')
-  , path = "http://" + window.location.hostname + ":8080"
+  , path = window.location
   , socket = io.connect(path);
 
 var lobby = {
