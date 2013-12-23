@@ -6,7 +6,8 @@ var http = require('http')
   , MathRoom = require('./game/MathRoom')
   , MathLobby = require('./game/MathLobby')
   , MathWizard = require('./game/MathWizard')
-  , server = socketIO.listen(8080).set('log level', 1)
+  , app = http.createServer(ecstatic({root: __dirname + "/public"}))
+  , server = socketIO.listen(app).set('log level', 1)
   , lobby = new MathLobby("lobby")
   , roomManager = new roomba.RoomManager(server, lobby)
   , additionRoom = new MathRoom("addition", "+", 12, 3)
@@ -77,5 +78,4 @@ server.sockets.on("connection", function (socket) {
     .on("join", handleJoin(socket, roomManager))
 });
 
-http.createServer(ecstatic({root: __dirname + "/public"}))
-.listen(1234, console.log.bind(console, "server on 1234"));
+app.listen(8080, console.log.bind(console, "server on 8080"));

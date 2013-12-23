@@ -98,7 +98,6 @@ function collectingTick (game) {
 
   if (now > game.nextSwitch) {
     pointTotals = calculatePointTotals(game._answer, game.submissions); 
-    console.log(pointTotals);
     _.forEach(pointTotals, updatePoints);  
     game.answer = game._answer;
     game.activeState = "displaying";
