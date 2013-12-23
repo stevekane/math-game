@@ -3873,8 +3873,42 @@ if (typeof define === "function" && define.amd) {
 }
 })();
 },{}],2:[function(require,module,exports){
+var Router = function (gui) {
+  this.gui = gui; 
+  this._boundProcess = this.processHash.bind(this);
+};
+
+Router.prototype.processHash = function () {
+  var hash = window.location.hash.replace("#", "")
+    , isRoomLookup = hash.indexOf('room') > -1
+    , roomName = hash.split("/")[1];
+
+  this.gui.setState({
+    roomName: "lobby",
+    activeState: "lobby"
+  });
+
+  if (isRoomLookup) {
+    this.gui.props.socket.emit("join", roomName || "lobby");
+  }
+};
+
+Router.prototype.start = function () {
+  window.addEventListener("hashchange", this._boundProcess);
+  return this;
+};
+
+Router.prototype.stop = function () {
+  window.removeEventListener("hashchange", this._boundProcess);
+  return this;
+};
+
+module.exports = Router;
+
+},{}],3:[function(require,module,exports){
 var io= require('socket.io-client')
-  , Router = require('./components/Router.jsx')
+  , Router = require('./Router')
+  , RouterComponent = require('./components/Router.jsx')
   , path = window.location
   , socket = io.connect(path);
 
@@ -3899,15 +3933,23 @@ var handleConnect = function () {
 
 var handleBeginConfirm = function (user) {
   gui.setProps({user: user});
+  router.processHash();
 };
 
-var handleJoinConfirm = function (roomName) {
-  var targetState = roomName === "lobby" ? "lobby" : "room";
-
+var handleJoinRoom = function (roomName) {
+  window.location.hash = "#room/" + roomName
   gui.setState({
-    activeState: targetState,
+    activeState: "room",
     roomName: roomName
   });
+};
+
+var handleJoinLobby = function (lobbyName) {
+  window.location.hash = "#lobby";
+  gui.setState({
+    activeState: "lobby",
+    roomName: lobbyName
+  }); 
 };
 
 var handleNameChangeConfirm = function (user) {
@@ -3925,20 +3967,22 @@ var updateRoom = function (room) {
 socket
   .on("connect", handleConnect)
   .on("begin-confirm", handleBeginConfirm)
-  .on("join-confirm", handleJoinConfirm)
+  .on("join-room", handleJoinRoom)
+  .on("join-lobby", handleJoinLobby)
   .on("name-change-confirm", handleNameChangeConfirm)
-  //IMPLEMENT .on("submit-confirm", handleSubmitConfirm)
   .on("tick-lobby", updateLobby)
   .on("tick-room", updateRoom);
 
-var gui = React.renderComponent(Router({
+var gui = React.renderComponent(RouterComponent({
   room: room,
   lobby: lobby,
   user: user,
   socket: socket
 }), document.body);
 
-},{"./components/Router.jsx":8,"socket.io-client":1}],3:[function(require,module,exports){
+var router = new Router(gui).start();
+
+},{"./Router":2,"./components/Router.jsx":9,"socket.io-client":1}],4:[function(require,module,exports){
 /** @jsx React.DOM */var AnswerInput = React.createClass({displayName: 'AnswerInput',
   getInitialState: function () {
     return {value: ""}; 
@@ -3977,7 +4021,7 @@ var gui = React.renderComponent(Router({
 
 module.exports = AnswerInput;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /** @jsx React.DOM */var roomSummary = function (context, room, roomName) {
   var cx = React.addons.classSet
   var classes = cx({
@@ -3985,9 +4029,7 @@ module.exports = AnswerInput;
     "active": room.name === roomName
   });
   return (
-  React.DOM.a(
-    {className:classes,
-    onClick:context.selectRoom.bind(context, room)}, 
+  React.DOM.a( {className:classes, href:"#room/" + room.name}, 
     React.DOM.span( {className:"badge"}, room.users.length),
     room.name || "math"
   )
@@ -4021,7 +4063,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
 
 module.exports = Lobby;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /** @jsx React.DOM */var renderState = function (component, isEditing) {
   var html;
 
@@ -4119,7 +4161,7 @@ var NavBar = React.createClass({displayName: 'NavBar',
 
 module.exports = NavBar;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /** @jsx React.DOM */var playerSummary = function (player, activePlayer) {
   var cx = React.addons.classSet;
   var classes = cx({
@@ -4156,7 +4198,7 @@ var PlayerList = React.createClass({displayName: 'PlayerList',
 
 module.exports = PlayerList;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /** @jsx React.DOM */var AnswerInput = require('./AnswerInput.jsx')
   , PlayerList = require('./PlayerList.jsx');
 
@@ -4182,7 +4224,7 @@ var Room = React.createClass({displayName: 'Room',
 
 module.exports = Room;
 
-},{"./AnswerInput.jsx":3,"./PlayerList.jsx":6}],8:[function(require,module,exports){
+},{"./AnswerInput.jsx":4,"./PlayerList.jsx":7}],9:[function(require,module,exports){
 /** @jsx React.DOM */var NavBar = require('./NavBar.jsx')
   , Room = require('./Room.jsx')
   , Lobby = require('./Lobby.jsx');
@@ -4233,5 +4275,5 @@ var RouterComponent = React.createClass({displayName: 'RouterComponent',
 
 module.exports = RouterComponent;
 
-},{"./Lobby.jsx":4,"./NavBar.jsx":5,"./Room.jsx":7}]},{},[2])
+},{"./Lobby.jsx":5,"./NavBar.jsx":6,"./Room.jsx":8}]},{},[3])
 ;

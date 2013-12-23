@@ -5,9 +5,7 @@ var roomSummary = function (context, room, roomName) {
     "active": room.name === roomName
   });
   return (
-  <a
-    className={classes}
-    onClick={context.selectRoom.bind(context, room)}>
+  <a className={classes} href={"#room/" + room.name}>
     <span className="badge">{room.users.length}</span>
     {room.name || "math"}
   </a>

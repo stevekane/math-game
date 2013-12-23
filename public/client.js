@@ -1,5 +1,6 @@
 var io= require('socket.io-client')
-  , Router = require('./components/Router.jsx')
+  , Router = require('./Router')
+  , RouterComponent = require('./components/Router.jsx')
   , path = window.location
   , socket = io.connect(path);
 
@@ -24,15 +25,23 @@ var handleConnect = function () {
 
 var handleBeginConfirm = function (user) {
   gui.setProps({user: user});
+  router.processHash();
 };
 
-var handleJoinConfirm = function (roomName) {
-  var targetState = roomName === "lobby" ? "lobby" : "room";
-
+var handleJoinRoom = function (roomName) {
+  window.location.hash = "#room/" + roomName
   gui.setState({
-    activeState: targetState,
+    activeState: "room",
     roomName: roomName
   });
+};
+
+var handleJoinLobby = function (lobbyName) {
+  window.location.hash = "#lobby";
+  gui.setState({
+    activeState: "lobby",
+    roomName: lobbyName
+  }); 
 };
 
 var handleNameChangeConfirm = function (user) {
@@ -50,15 +59,17 @@ var updateRoom = function (room) {
 socket
   .on("connect", handleConnect)
   .on("begin-confirm", handleBeginConfirm)
-  .on("join-confirm", handleJoinConfirm)
+  .on("join-room", handleJoinRoom)
+  .on("join-lobby", handleJoinLobby)
   .on("name-change-confirm", handleNameChangeConfirm)
-  //IMPLEMENT .on("submit-confirm", handleSubmitConfirm)
   .on("tick-lobby", updateLobby)
   .on("tick-room", updateRoom);
 
-var gui = React.renderComponent(Router({
+var gui = React.renderComponent(RouterComponent({
   room: room,
   lobby: lobby,
   user: user,
   socket: socket
 }), document.body);
+
+var router = new Router(gui).start();

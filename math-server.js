@@ -54,12 +54,18 @@ var handleSubmission = _.curry(function (socket, roomManager, answer) {
 
 var handleJoin = _.curry(function (socket, roomManager, roomName) {
   var user = roomManager.socketToUserMap[socket.id]
-    , targetRoom = roomManager.getRoomByName(roomName);
+    , targetRoom = roomManager.getRoomByName(roomName)
+    , lobby = roomManager.getLobby();
 
   if (user.room) user.room.removeUser(user);
-  if (targetRoom) targetRoom.addUser(user); 
-  else roomManager.getLobby().addUser(user);
-  socket.emit("join-confirm", user.room.name);
+  if (targetRoom) {
+    console.log(targetRoom.name);
+    targetRoom.addUser(user); 
+    socket.emit("join-room", user.room.name);
+  } else {
+    lobby.addUser(user);
+    socket.emit("join-lobby", lobby.name);
+  }
 });
 
 var handleNameChange = _.curry(function (socket, roomManager, name) {
