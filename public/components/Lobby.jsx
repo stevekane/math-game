@@ -1,4 +1,4 @@
-var roomSummary = function (context, room, roomName) {
+var roomSummary = function (room, roomName) {
   var cx = React.addons.classSet
   var classes = cx({
     "list-group-item": true,
@@ -14,10 +14,6 @@ var roomSummary = function (context, room, roomName) {
 
 var Lobby = React.createClass({
   
-  selectRoom: function (room) {
-    this.props.socket.emit("join", room.name);
-  },
-  
   render: function () {
     var rooms = this.props.rooms
       , roomName = this.props.roomName
@@ -28,7 +24,7 @@ var Lobby = React.createClass({
       <div className="list-group">
       {
         rooms.map(function (room) {
-          return roomSummary(self, room, roomName);
+          return roomSummary(room, roomName);
         })
       }
       </div> 

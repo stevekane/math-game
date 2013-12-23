@@ -4022,7 +4022,7 @@ var router = new Router(gui).start();
 module.exports = AnswerInput;
 
 },{}],5:[function(require,module,exports){
-/** @jsx React.DOM */var roomSummary = function (context, room, roomName) {
+/** @jsx React.DOM */var roomSummary = function (room, roomName) {
   var cx = React.addons.classSet
   var classes = cx({
     "list-group-item": true,
@@ -4038,10 +4038,6 @@ module.exports = AnswerInput;
 
 var Lobby = React.createClass({displayName: 'Lobby',
   
-  selectRoom: function (room) {
-    this.props.socket.emit("join", room.name);
-  },
-  
   render: function () {
     var rooms = this.props.rooms
       , roomName = this.props.roomName
@@ -4052,7 +4048,7 @@ var Lobby = React.createClass({displayName: 'Lobby',
       React.DOM.div( {className:"list-group"}, 
       
         rooms.map(function (room) {
-          return roomSummary(self, room, roomName);
+          return roomSummary(room, roomName);
         })
       
       ) 
