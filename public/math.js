@@ -3875,7 +3875,7 @@ if (typeof define === "function" && define.amd) {
 },{}],2:[function(require,module,exports){
 var io= require('socket.io-client')
   , Router = require('./components/Router.jsx')
-  , path = "ws://" + window.location.hostname + ":8080"
+  , path = "http://" + window.location.hostname + ":8080"
   , socket = io.connect(path);
 
 var lobby = {
