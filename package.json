@@ -35,7 +35,7 @@
   "devDependencies": {
     "tape": "~2.3.0",
     "react-tools": "~0.5.1",
-    "reactify": "~0.4.0"
+    "reactify": "~0.5.0"
   },
   "subdomain": "such-math",
   "engines": {
