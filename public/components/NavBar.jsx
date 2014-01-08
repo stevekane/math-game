@@ -2,7 +2,7 @@ var renderState = function (component, isEditing) {
   var html;
 
   if (isEditing) {
-    html =  (
+    html = (
     <form className="navbar-form navbar-left">
       <div className="form-group">
         <input

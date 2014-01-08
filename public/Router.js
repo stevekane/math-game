@@ -1,21 +1,16 @@
-var Router = function (gui) {
-  this.gui = gui; 
+var Router = function (game) {
+  this.game = game;
   this._boundProcess = this.processHash.bind(this);
 };
 
 Router.prototype.processHash = function () {
   var hash = window.location.hash.replace("#", "")
     , isRoomLookup = hash.indexOf('room') > -1
-    , roomName = hash.split("/")[1];
+    , roomName = isRoomLookup
+      ? hash.split("/")[1]
+      : "lobby";
 
-  this.gui.setState({
-    roomName: "lobby",
-    activeState: "lobby"
-  });
-
-  if (isRoomLookup) {
-    this.gui.props.socket.emit("join", roomName || "lobby");
-  }
+  this.game.socket.emit("join", roomName);
 };
 
 Router.prototype.start = function () {
